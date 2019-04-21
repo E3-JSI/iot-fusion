@@ -1,4 +1,4 @@
-# nrgStream fusion component
+# IoT-fusion component
 
 ## Requirements
 You need to have ```node.js``` installed (tested with node 8.6.1) and ```npm```. You need to have Kafka installed in your system and appropriate topics for receiving raw data from sensor nodes and sending feature vectors set up.
