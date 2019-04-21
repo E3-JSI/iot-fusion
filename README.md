@@ -1,13 +1,14 @@
 # IoT-fusion component
 
 ## Requirements
-You need to have ```node.js``` installed (tested with node 8.6.1) and ```npm```. You need to have Kafka installed in your system and appropriate topics for receiving raw data from sensor nodes and sending feature vectors set up.
+You need to have ```node.js``` installed (tested with node 8.6.1+) and ```npm```.
+You need to have Kafka installed (cloud setup) or MQTT (edge setup) in your system and appropriate topics for receiving raw data from sensor nodes and sending feature vectors set up.
 
 ## Installation
 Clone the repository into your working directory and run installation procedure simply with ```npm install```.
 
 ## Configurations
-You need to configure separately your aggregate configurations (see example below) and fusion configurations.
+You need to configure separately your aggregate configurations (see example below) and fusion configurations. Some of the configurations can be observed in ```conf/``` folder.
 
 ```javascript
 let aggrConfigs = {
@@ -54,9 +55,11 @@ let fusionConfig = {
 }
 ```
 
-## Data
-Simulation data is available at [http://atena.ijs.si/data/IAPE/data.zip]. The ZIP file should be unzipped in the main repository folder!
-
 ## Running
 Run simply with ```npm start```.
 
+# Publication
+
+Please refer to this paper (currently under consideration in MDPI Sensors):
+
+* Kenda, K.; Kažič, B.; Novak, E.; Mladenić, D. Streaming Data Fuson for the Internet of Things. Sensors 2019 (in review)
