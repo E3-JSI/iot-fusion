@@ -1,0 +1,21 @@
+{
+  "name": "nrg-stream-fusion",
+  "version": "1.0.0",
+  "description": "Multiple hetergeneous data stream fusion component based on Kafka.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha tests",
+    "make": ""
+  },
+  "author": "Klemen Kenda",
+  "license": "ISC",
+  "dependencies": {
+    "kafka-node": "^2.6.1",
+    "mqtt": "^2.18.2",
+    "qminer": "^9.2.3npm "
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
+  }
+}
