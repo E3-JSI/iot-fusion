@@ -6,6 +6,7 @@
 // includes
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('./brokers/brokers.js');
 const streamFusion = require('./streamFusion.js');
+const Utils = require('./utils/utils.js');
 
 class streamMaster {
     /**
@@ -22,7 +23,10 @@ class streamMaster {
         this.fusion = [];
         // admin topic
         this.topic = "fusionAdmin";
-        this.client_id = (Math.random() * 1000000000).toString();
+        // set version
+        this.version = "1.0.0";
+        // set client id (= master_id)
+        this.client_id = Utils.uuidv4();
 
         // connect to broker
         if ("connection" in config) {
@@ -42,14 +46,29 @@ class streamMaster {
     }
 
     /**
+     * Packs the message in the standard format.
+     * @param {*} msg
+     * @return Returns string with the message msg with added standard headers.
+     */
+    composeMessage(msg) {
+        // initialize the message
+        let message = msg;
+        // add standard headers
+        message["id"] = this.client_id;
+        message["version"] = this.version;
+
+        // return the message
+        return JSON.stringify(message);
+    }
+
+    /**
      * Receive message via broker's admin topic.
-     * @param {string} msg
+     * @param {JSON} msg Message from broker.
      */
     messageCb(msg) {
-        console.log(this);
         if ("command" in msg) {
             if (msg.command == "identify") {
-                this.broker.publish(JSON.stringify({"client_id": this.client_id }));
+                this.broker.publish(this.composeMessage({}));
             }
         }
         console.log("Received:", msg);

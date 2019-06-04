@@ -64,7 +64,7 @@ class KafkaNodeBroker extends Broker {
 
     publish(msg) {
         this.producer.send([{ topic: this.topic, messages: msg }], function (err, data) {
-            console.log("Feature Vector --> Kafka: (err)", err, ", (data)", data);
+            console.log("Publish to Kafka: (err)", err, ", (data)", data);
         });
     }
 
