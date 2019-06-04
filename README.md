@@ -60,6 +60,6 @@ Run simply with ```npm start```.
 
 # Publication
 
-Please refer to this paper (currently under consideration in MDPI Sensors):
+Please refer to this paper:
 
-* Kenda, K.; Kažič, B.; Novak, E.; Mladenić, D. Streaming Data Fuson for the Internet of Things. Sensors 2019 (in review)
+* [Kenda, K.; Kažič, B.; Novak, E.; Mladenić, D. Streaming Data Fusion for the Internet of Things. Sensors 2019, 19, 1955.](https://www.mdpi.com/1424-8220/19/8/1955)
