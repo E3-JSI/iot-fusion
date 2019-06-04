@@ -10,6 +10,7 @@ const streamingNode = require('./nodes/streamingNode.js');
 const streamingEnergyNode = require('./nodes/streamingEnergyNode.js');
 const streamingSubstationNode = require('./nodes/streamingSubstationNode.js');
 const streamingTrainNode = require('./nodes/streamingTrainNode.js');
+const streamingTimeValueNode = require('./nodes/streamingTimeValueNode.js');
 const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
 const streamModel = require ('./streamModel.js');
@@ -71,7 +72,10 @@ class streamFusion {
             // detect master node
             if (nodeConfig.master == true) this.masterNodeId = nodeI;
             // create new node and save it to the list of nodes
-            if (nodeConfig["type"] == "substation") {
+
+            if (nodeConfig["type"] == "timevalue") {
+                this.nodes.push(new streamingTimeValueNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
+            } else if (nodeConfig["type"] == "substation") {
                 this.nodes.push(new streamingSubstationNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else if (nodeConfig["type"] == "energy") {
                 this.nodes.push(new streamingEnergyNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
