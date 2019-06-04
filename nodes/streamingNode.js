@@ -63,7 +63,7 @@ class streamingNode {
             if (this.parent.config.connection.type == "kafka") {
                 this.broker = new KafkaNodeBroker(this.connectionConfig,
                     this.topic,
-                    "client" + + this.parent.fusion_id + this.nodeId);
+                    "client" + this.parent.fusion_id + this.nodeId);
                 this.broker.addListener(self.processRecord.bind(self));
             } else if (this.parent.config.connection.type == "mqtt") {
                 this.broker = new MQTTBroker(this.connectionConfig,
