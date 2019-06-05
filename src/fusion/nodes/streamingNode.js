@@ -7,7 +7,7 @@
 
 // includes
 const kafka = require('kafka-node');
-const { KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../brokers/brokers.js');
+const { KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../../common/brokers/brokers.js');
 
 class streamingNode {
     /**

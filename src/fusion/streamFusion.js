@@ -14,7 +14,7 @@ const streamingTimeValueNode = require('./nodes/streamingTimeValueNode.js');
 const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
 const streamModel = require ('./streamModel.js');
-const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('./brokers/brokers.js');
+const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 
 class streamFusion {
     /**
