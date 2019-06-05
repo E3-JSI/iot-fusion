@@ -66,9 +66,29 @@ class streamMaster {
      * @param {JSON} msg Message from broker.
      */
     messageCb(msg) {
+        // determine whether command is relevant for current client
+        // by default it is (if intended for all slaves)
+        let target = true;
+        // if intended for a particular slave, it should be a match
+        if ("target" in msg) {
+            if (msg["target"] != this.client_id) target = false;
+        };
+
+        if (target == false) continue;
+
         if ("command" in msg) {
             if (msg.command == "identify") {
                 this.broker.publish(this.composeMessage({}));
+            }
+            else if (msg.command == "status") {
+                // TODO: report on status
+                // build a list of fusions
+            }
+            else if (msg.command == "new") {
+                // TODO: spawn a new fusion
+            }
+            else if (msg.command == "delete") {
+                // TODO: destroy and delete a fusion model
             }
         }
         console.log("Received:", msg);
