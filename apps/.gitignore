@@ -1,0 +1,5 @@
+node_modules/
+db/
+*/data/*.json
+*/package-lock.json
+*/predictions.csv

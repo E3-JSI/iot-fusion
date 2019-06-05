@@ -1,0 +1,16 @@
+{
+  "name": "streamfusionstation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha tests",
+    "make": ""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nrg-stream-fusion": "^1.0.0"
+  }
+}
