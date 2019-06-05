@@ -4,7 +4,7 @@ const streamingWeatherNode = require('../nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('../nodes/streamingStaticNode.js');
 const streamingTrainNode = require('../nodes/streamingTrainNode.js');
 const streamingSubstationNode = require('../nodes/streamingSubstationNode.js');
-const fileManager = require('../utils/fileManager.js');
+const fileManager = require('../../common/utils/fileManager.js');
 const qm = require('qminer');
 const fs = require('fs');
 

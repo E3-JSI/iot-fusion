@@ -1,4 +1,4 @@
-const fileManager = require('../utils/fileManager.js');
+const fileManager = require('../../common/utils/fileManager.js');
 const StreamFusion = require('../streamFusion.js');
 const qm = require('qminer');
 const fs = require('fs');
