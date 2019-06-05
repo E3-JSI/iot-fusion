@@ -16,7 +16,7 @@ class KafkaNodeBroker extends Broker {
         console.log("StreamFusion HLP for Kafka: " + this.topic);
         // initialize kafka producer
         let HighLevelProducer = kafka.HighLevelProducer;
-        let client = new kafka.Client(this.config.zookeeper, "producer" + this.clientId);
+        let client = new kafka.KafkaClient({ kafkaHost: this.config.kafka });
         this.producer = new HighLevelProducer(client);
     }
 
@@ -24,9 +24,10 @@ class KafkaNodeBroker extends Broker {
         console.log("Connecting to Kafka: " + this.topic);
 
         this.Consumer = kafka.Consumer;
-        this.client = new kafka.Client(this.config.zookeeper, "consumer" +  this.clientId);
+        this.client = new kafka.KafkaClient({ kafkaHost: this.config.kafka });
         this.offset = new kafka.Offset(this.client);
         let self = this;
+
         this.consumer = new this.Consumer(
             this.client,
             [ { topic: this.topic, partition: 0 }],
@@ -38,12 +39,12 @@ class KafkaNodeBroker extends Broker {
                 let rec = JSON.parse(message.value);
                 cb(rec);
             } catch (err) {
-                console.log("ERROR", err);
+                console.log("Message Error: ", err.message);
             }
         });
 
         this.consumer.on('error', function (err) {
-            console.log("Error", err);
+            console.log("Consumer Error: ", err.message);
         });
 
         // If consumer get `offsetOutOfRange` event, fetch data from the smallest(oldest) offset

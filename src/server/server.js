@@ -1,14 +1,8 @@
-/**
- * streamMaster
- * Class for orchestration/organization of stream fusion models.
- */
-
 // includes
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
-const streamFusion = require('./streamFusion.js');
 const Utils = require('../common/utils/utils.js');
 
-class streamMaster {
+class server {
     /**
      * Constructor for the stream fusion master.
      * @param {JSON} config Configuration structure for the master.
@@ -96,4 +90,4 @@ class streamMaster {
 }
 
 // expose class to the outside world
-module.exports = streamMaster;
+module.exports = server;
