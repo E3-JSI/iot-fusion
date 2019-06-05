@@ -4,9 +4,9 @@
  */
 
 // includes
-const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('./brokers/brokers.js');
+const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 const streamFusion = require('./streamFusion.js');
-const Utils = require('./utils/utils.js');
+const Utils = require('../common/utils/utils.js');
 
 class streamMaster {
     /**
