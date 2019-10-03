@@ -13,3 +13,7 @@ In case you use any of the components for your research, please refer to (and ci
 
 ## Applications
 * [Kenda, K.; Mellios, N.; Senožetnik, M.; Pergar, P. Architecture for Stream Mining in Water Management.](https://www.frontiersin.org/journals/big-data) (in preparation)
+
+## Related work
+* [Kenda, K.; Kažič, B.; Stopar, L., Fortuna, B., Rupnik, J., Škrjanc, M.; Mladenić, D. Data Fusion Framework for Streaming Heterogeneous Data Sources](#) (in peparation)
+* [Kenda, K., & Mladenić, D. Autonomous sensor data cleaning in stream mining setting. Business Systems Research Journal, 9(2), 69-79.](http://www.bsrjournal.org/vol-9-no-2.html)
