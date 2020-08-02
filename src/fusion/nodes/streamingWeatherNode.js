@@ -3,7 +3,6 @@
  * Weather streaming node class for heterogeneous sensor stream data fusion.
  */
 const streamingNode = require('./streamingNode.js');
-const kafka = require('kafka-node');
 
 class streamingWeatherNode extends streamingNode {
     /**

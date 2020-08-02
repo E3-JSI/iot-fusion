@@ -11,7 +11,7 @@
   "author": "Klemen Kenda",
   "license": "ISC",
   "dependencies": {
-    "qminer": "^9.2.3npm "
+    "qminer": "^9.2.3"
   },
   "devDependencies": {
     "mocha": "^4.0.1"
