@@ -84,9 +84,9 @@ let fusionConfig = {
     "fusionTick": 60 * 60 * 1000,                                           // 1h
     "nodes": [
         {
-            "type": "timevalue",
-            "nodeid": "timevalue",
-            "aggrConfigId": "timevalue",
+            "type": "smartlamp",
+            "nodeid": "smartlamp",
+            "aggrConfigId": "smartlamp",
             "master": true,
             "attributes": [
                 { "time": 0, "attributes": [                                           // current time
@@ -116,15 +116,15 @@ function processRecordDummyCb(nodeI, parent) {
     return true;
 }
 
-describe('streamingTimeValueNode', function() {
+describe('streamingSmartLampNode', function() {
     let base;
     let sn;
 
     before(function() {
-        fileManager.removeFolder('./db3/');
-        fileManager.createFolder('./db3/');
+        fileManager.removeFolder('./db4/');
+        fileManager.createFolder('./db4/');
         // create base
-        base = new qm.Base({ dbPath: './db3/', mode: 'createClean' });
+        base = new qm.Base({ dbPath: './db4/', mode: 'createClean' });
         // sn = new streamingNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, null, 99, null);
         // sen = new streamingEnergyNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
         // swn = new streamingWeatherNode(base, connectionConfig, fusionConfig["nodes"][2], aggrConfigs, null, 99, null);
@@ -144,197 +144,259 @@ describe('streamingTimeValueNode', function() {
         });
 
         it ('check if store exists', function() {
-            assert.equal(ssln.rawstore.name, "timevalue");
+            assert.equal(ssln.rawstore.name, "smartlamp");
         });
 
         it ('check store structure', function() {
             assert.deepEqual(ssln.rawstore.fields, [
                 { id: 0, name: 'Time', type: 'datetime', nullable: false, internal: false, primary: false },
-                { id: 1, name: 'value', type: 'float', nullable: false, internal: false, primary: false }
+                { id: 1, name: 'pact', type: 'float', nullable: false, internal: false, primary: false },
+                { id: 2, name: 'dimml', type: 'float', nullable: false, internal: false, primary: false },
+                { id: 3, name: 'w', type: 'float', nullable: false, internal: false, primary: false }
             ]);
         });
 
         it('aggregates initialized - number', function() {
-            assert.equal(Object.keys(ssln.aggregate).length, 15);
+            assert.equal(Object.keys(ssln.aggregate).length, 39);
         });
 
         it('aggregates initialized - key names', function() {
             assert.deepEqual(Object.keys(ssln.aggregate), [
-                "value|tick",
-                "value|winbuf|21600000",
-                "value|ma|21600000",
-                "value|winbuf|43200000",
-                "value|ma|43200000",
-                "value|min|43200000",
-                "value|max|43200000",
-                "value|variance|43200000",
-                "value|winbuf|86400000",
-                "value|ma|86400000",
-                "value|min|86400000",
-                "value|max|86400000",
-                "value|variance|86400000",
-                "value|winbuf|604800000",
-                "value|ma|604800000"
+                "dimml|tick",
+                "dimml|winbuf|21600000",
+                "dimml|ma|21600000",
+                "dimml|min|21600000",
+                "dimml|max|21600000",
+                "dimml|variance|21600000",
+                "dimml|winbuf|86400000",
+                "dimml|ma|86400000",
+                "dimml|min|86400000",
+                "dimml|max|86400000",
+                "dimml|variance|86400000",
+                "dimml|winbuf|604800000",
+                "dimml|ma|604800000",
+                "pact|tick",
+                "pact|winbuf|21600000",
+                "pact|ma|21600000",
+                "pact|min|21600000",
+                "pact|max|21600000",
+                "pact|variance|21600000",
+                "pact|winbuf|86400000",
+                "pact|ma|86400000",
+                "pact|min|86400000",
+                "pact|max|86400000",
+                "pact|variance|86400000",
+                "pact|winbuf|604800000",
+                "pact|ma|604800000",
+                "w|tick",
+                "w|winbuf|21600000",
+                "w|ma|21600000",
+                "w|min|21600000",
+                "w|max|21600000",
+                "w|variance|21600000",
+                "w|winbuf|86400000",
+                "w|ma|86400000",
+                "w|min|86400000",
+                "w|max|86400000",
+                "w|variance|86400000",
+                "w|winbuf|604800000",
+                "w|ma|604800000"
             ]);
         });
 
-        /*
         it('config saved', function() {
-            assert.deepEqual(stvn.config, fusionConfig["nodes"][0]);
+            assert.deepEqual(ssln.config, fusionConfig["nodes"][0]);
         });
 
         it('fusionNodeI correctly saved', function() {
-            assert.equal(stvn.fusionNodeI, 99);
+            assert.equal(ssln.fusionNodeI, 99);
         });
 
         it ('callback function should be set', function() {
-            assert.equal(typeof stvn.processRecordCb, "function");
+            assert.equal(typeof ssln.processRecordCb, "function");
         });
 
         it ('parent saved', function() {
-            assert.equal(stvn.parent, null);
+            assert.equal(ssln.parent, null);
         });
 
         it ('buffer empty', function() {
-            assert.deepEqual(stvn.buffer, []);
+            assert.deepEqual(ssln.buffer, []);
         });
 
         it ('buffer position is 0', function() {
-            assert.equal(stvn.position, 0);
+            assert.equal(ssln.position, 0);
         });
 
         it ('master flag set correctly', function() {
-            assert.equal(stvn.master, true);
+            assert.equal(ssln.master, true);
         });
 
         it ('isMaster function', function() {
-            assert.equal(stvn.isMaster(), true);
+            assert.equal(ssln.isMaster(), true);
         });
 
         it ('connectToKafka function exists', function() {
-            assert.equal(typeof stvn.connectToKafka, "function");
+            assert.equal(typeof ssln.connectToKafka, "function");
         });
 
         it ('broadcastAggregates function exists', function() {
-            assert.equal(typeof stvn.broadcastAggregates, "function");
+            assert.equal(typeof ssln.broadcastAggregates, "function");
         });
 
         it ('createAggregates function exists', function() {
-            assert.equal(typeof stvn.createAggregates, "function");
+            assert.equal(typeof ssln.createAggregates, "function");
         });
 
         it ('offsetExists function exists', function() {
-            assert.equal(typeof stvn.offsetExists, "function");
+            assert.equal(typeof ssln.offsetExists, "function");
         });
 
         it ('deleteObsoleteRows function exists', function() {
-            assert.equal(typeof stvn.deleteObsoleteRows, "function");
+            assert.equal(typeof ssln.deleteObsoleteRows, "function");
         });
 
         it ('checkDataAvailability function exists', function() {
-            assert.equal(typeof stvn.checkDataAvailability, "function");
+            assert.equal(typeof ssln.checkDataAvailability, "function");
         });
 
         it ('setSlaveOffset function exists', function() {
-            assert.equal(typeof stvn.setSlaveOffset, "function");
+            assert.equal(typeof ssln.setSlaveOffset, "function");
         });
 
         it ('getOffsetTimestamp function exists', function() {
-            assert.equal(typeof stvn.getOffsetTimestamp, "function");
+            assert.equal(typeof ssln.getOffsetTimestamp, "function");
         });
 
         it ('setMasterOffset function exists', function() {
-            assert.equal(typeof stvn.getOffsetTimestamp, "function");
+            assert.equal(typeof ssln.getOffsetTimestamp, "function");
         });
 
         it ('getAggregates function exists', function() {
-            assert.equal(typeof stvn.getAggregates, "function");
+            assert.equal(typeof ssln.getAggregates, "function");
         });
 
         it ('getPartialFeatureVector function exists', function() {
-            assert.equal(typeof stvn.getPartialFeatureVector, "function");
+            assert.equal(typeof ssln.getPartialFeatureVector, "function");
         });
 
         it ('master set correctly', function() {
-            assert.equal(stvn.isMaster(), true);
+            assert.equal(ssln.isMaster(), true);
         });
 
         it ('master offset set correctly', function() {
-            stvn.setMasterOffset();
-            assert.equal(stvn.position, -1);
+            ssln.setMasterOffset();
+            assert.equal(ssln.position, -1);
         });
 
         it ('slave offset set correctly: no data', function() {
-            assert.equal(stvn.setSlaveOffset(0), false);
+            assert.equal(ssln.setSlaveOffset(0), false);
         });
-        */
     });
 
-    /*
     describe('data insertion', function() {
 
         it ('data record saved correctly', function() {
-            stvn.processRecord(JSON.parse('{"time": 1451606400,"value": 10.0}'));
-            stvn.processRecord(JSON.parse('{"time": 1451610000,"value": 20.0}'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0, "w": 1 }'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1, "w": 2 }'));
 
-            assert.equal(stvn.buffer.length, 2);
-            assert.equal(stvn.buffer[0].value, 10.0);
-            assert.equal(stvn.buffer[1].value, 20.0);
+            assert.equal(ssln.buffer.length, 2);
+            assert.equal(ssln.buffer[0].dimml, 0.0);
+            assert.equal(ssln.buffer[1].pact, 1.0);
+            assert.equal(ssln.buffer[1].w, 2);
         });
 
         it ('Empty values in message set to 0', function() {
-            stvn.processRecord(JSON.parse('{"time": 1451613600}'));
-            assert.equal(stvn.buffer.length, 3);
-            assert.equal(stvn.buffer[2].value, 0);
+            ssln.processRecord(JSON.parse('{"stampm": 1468493073000}'));
+            assert.equal(ssln.buffer.length, 3);
+            assert.equal(ssln.buffer[2].dimml, 0);
         });
 
         it ('stream aggregates calculated correctly for #2 insertion', function() {
-            assert.deepEqual(stvn.buffer[1], {
-                "stampm": 1451610000000,
-                "value": 20,
-                "value|max|43200000": 20,
-                "value|max|86400000": 20,
-                "value|ma|21600000": 15,
-                "value|ma|43200000": 15,
-                "value|ma|604800000": 15,
-                "value|ma|86400000": 15,
-                "value|min|43200000": 10,
-                "value|min|86400000": 10,
-                "value|variance|43200000": 50,
-                "value|variance|86400000": 50
+            assert.deepEqual(ssln.buffer[1], {
+                "stampm": 1468493072000,
+                "dimml": 1,
+                "dimml|max|21600000": 1,
+                "dimml|max|86400000": 1,
+                "dimml|ma|21600000": 0.5,
+                "dimml|ma|604800000": 0.5,
+                "dimml|ma|86400000": 0.5,
+                "dimml|min|21600000": 0,
+                "dimml|min|86400000": 0,
+                "dimml|variance|21600000": 0.5,
+                "dimml|variance|86400000": 0.5,
+                "pact": 1,
+                "pact|max|21600000": 1,
+                "pact|max|86400000": 1,
+                "pact|ma|21600000": 0.5,
+                "pact|ma|604800000": 0.5,
+                "pact|ma|86400000": 0.5,
+                "pact|min|21600000": 0,
+                "pact|min|86400000": 0,
+                "pact|variance|21600000": 0.5,
+                "pact|variance|86400000": 0.5,
+                "w": 2,
+                "w|max|21600000": 2,
+                "w|max|86400000": 2,
+                "w|ma|21600000": 1.5,
+                "w|ma|604800000": 1.5,
+                "w|ma|86400000": 1.5,
+                "w|min|21600000": 1,
+                "w|min|86400000": 1,
+                "w|variance|21600000": 0.5,
+                "w|variance|86400000": 0.5
             });
         });
 
         it ('9 more data insertions', function() {
             for (let i = 1; i <= 9; i++) {
-                let time = 1451613600 + (i * 3600);
-                let val = i + 3 * 10;
-                stvn.processRecord(JSON.parse('{"time":' + time + ',"value": ' + val + '}'));
+                let time = 1468493073000 + i * 1000;
+                let dimml = i + 1;
+                let pact = i + 1;
+                let w = i + 2;
+                ssln.processRecord(JSON.parse('{"stampm":' + time + ',"dimml": ' + dimml + ',"pact": ' + pact + ',"w": ' + w + '}'));
             }
-            assert.equal(stvn.buffer.length,12);
+            assert.equal(ssln.buffer.length,12);
 
-            assert.deepEqual(stvn.buffer[11], {
-                "stampm": 1451646000000,
-                "value": 39,
-                "value|max|43200000": 39,
-                "value|max|86400000": 39,
-                "value|ma|21600000": 36,
-                "value|ma|43200000": 28.75,
-                "value|ma|604800000": 28.75,
-                "value|ma|86400000": 28.75,
-                "value|min|43200000": 0,
-                "value|min|86400000": 0,
-                "value|variance|43200000": 151.47727272727272,
-                "value|variance|86400000": 151.47727272727272
+            assert.deepEqual(ssln.buffer[11], {
+                "stampm": 1468493082000,
+                "dimml": 10,
+                "dimml|max|21600000": 10,
+                "dimml|max|86400000": 10,
+                "dimml|ma|21600000": 4.583333333333333,
+                "dimml|ma|604800000": 4.583333333333333,
+                "dimml|ma|86400000": 4.583333333333333,
+                "dimml|min|21600000": 0,
+                "dimml|min|86400000": 0,
+                "dimml|variance|21600000": 12.083333333333336,
+                "dimml|variance|86400000": 12.083333333333336,
+                "pact": 10,
+                "pact|max|21600000": 10,
+                "pact|max|86400000": 10,
+                "pact|ma|21600000": 4.583333333333333,
+                "pact|ma|604800000": 4.583333333333333,
+                "pact|ma|86400000": 4.583333333333333,
+                "pact|min|21600000": 0,
+                "pact|min|86400000": 0,
+                "pact|variance|21600000": 12.083333333333336,
+                "pact|variance|86400000": 12.083333333333336,
+                "w": 11,
+                "w|max|21600000": 11,
+                "w|max|86400000": 11,
+                "w|ma|21600000": 5.5,
+                "w|ma|604800000": 5.5,
+                "w|ma|86400000": 5.5,
+                "w|min|21600000": 0,
+                "w|min|86400000": 0,
+                "w|variance|21600000": 13,
+                "w|variance|86400000": 13
             });
         });
 
         it ('duplicate insertions test', function() {
-            stvn.processRecord(JSON.parse('{"time": 1451606400,"value": 10.0}'));
-            stvn.processRecord(JSON.parse('{"time": 1451610000,"value": 20.0}'));
-            assert.equal(stvn.buffer.length, 12);
+            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0, "w": 1 }'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1, "w": 2 }'));
+            assert.equal(ssln.buffer.length, 12);
         });
-
     });
-    */
 });

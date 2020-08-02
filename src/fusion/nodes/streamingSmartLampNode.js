@@ -40,6 +40,9 @@ class streamingSmartLampNode extends streamingNode {
         });
         this.rawstore = this.base.store(this.nodeId);
 
+        // initialize last timestamp
+        this.lastTimestamp = 0;
+
         // create appropriate stream aggregates
         // with selected stream aggregates definition
         super.createAggregates(aggrConfigs[config.aggrConfigId]);
@@ -57,14 +60,10 @@ class streamingSmartLampNode extends streamingNode {
 
         // TODO: what if we used last-value interpolation instead of zero in the
         //       null?
-        let isoTime = rec["stampm"];
+        let unixts = rec["stampm"];
         let dimml = (isNaN(rec["dimml"]) || rec["dimml"] == null) ? 0 : rec["dimml"];
         let pact = (isNaN(rec["pact"]) || rec["pact"] == null) ? 0 : rec["pact"];
         let w = (isNaN(rec["w"]) || rec["w"] == null) ? 0 : rec["w"];
-
-        // unixts
-        // QMiner does not parse seconds correctly if time is given with ISO string
-        let unixts = Date.parse(isoTime);
 
         if (unixts <= this.lastTimestamp) {
             console.log("Smart Lamp - double timestamp.");
@@ -86,6 +85,7 @@ class streamingSmartLampNode extends streamingNode {
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
         this.rawstore.triggerOnAddCallbacks(this.rawRecord);
+        this.lastTimestamp = unixts;
 
         // reading current aggregates
         let aggregates = super.getAggregates();
