@@ -4,6 +4,7 @@ const streamingWeatherNode = require('../nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('../nodes/streamingStaticNode.js');
 const streamingTimeValueNode = require('../nodes/streamingTimeValueNode.js');
 const streamingSmartLampNode = require('../nodes/streamingSmartLampNode.js');
+const streamingTrafficCounterNode = require('../nodes/streamingTrafficCounterNode.js');
 const fileManager = require('../../common/utils/fileManager.js');
 const qm = require('qminer');
 const fs = require('fs');
@@ -18,8 +19,8 @@ let connectionConfig = {
 
 // basic aggregate config
 let aggrConfigs = {
-    "smartlamp": [
-        { "field": "dimml", "tick": [
+    "trafficcounter": [
+        { "field": "carno", "tick": [
             { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
                 { "type": "ma" },
                 { "type": "min" },
@@ -36,7 +37,7 @@ let aggrConfigs = {
                 { "type": "ma" }
             ]}
         ]},
-        { "field": "pact", "tick": [
+        { "field": "v", "tick": [
             { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
                 { "type": "ma" },
                 { "type": "min" },
@@ -52,24 +53,7 @@ let aggrConfigs = {
             { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
                 { "type": "ma" }
             ]}
-        ]},
-        { "field": "w", "tick": [
-            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
-                { "type": "ma" },
-                { "type": "min" },
-                { "type": "max" },
-                { "type": "variance" }
-            ]},
-            { "type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [         // 1d
-                { "type": "ma" },
-                { "type": "min" },
-                { "type": "max" },
-                { "type": "variance" }
-            ]},
-            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
-                { "type": "ma" }
-            ]}
-        ]},
+        ]}
     ]
 };
 
@@ -77,35 +61,33 @@ let aggrConfigs = {
 // for testing reasons we are overriding fusionTick, which is in each node
 // otherwise inherited from fusionConfig
 let fusionConfig = {
-    "fusionModel": "smartlamp",
+    "fusionModel": "trafficcounter",
     "connection": {
         "type": "mqtt"
     },
     "fusionTick": 60 * 60 * 1000,                                           // 1h
     "nodes": [
         {
-            "type": "smartlamp",
-            "nodeid": "smartlamp",
-            "aggrConfigId": "smartlamp",
+            "type": "trafficcounter",
+            "nodeid": "trafficcounter",
+            "aggrConfigId": "trafficcounter",
             "master": true,
             "attributes": [
                 { "time": 0, "attributes": [                                           // current time
-                    { type: "value", "name": "dimml" },
-                    { type: "value", "name": "pact|ma|21600" },
-                    { type: "value", "name": "w|ma|21600" },
-                    { type: "value", "name": "dimml|ma|86400000" },
-                    { type: "value", "name": "dimml|min|86400000" },
-                    { type: "value", "name": "dimml|max|86400000" },
-                    { type: "value", "name": "dimml|variance|86400000" }
+                    { type: "value", "name": "carno" },
+                    { type: "value", "name": "v|ma|21600" },
+                    { type: "value", "name": "carno|ma|86400000" },
+                    { type: "value", "name": "carno|min|86400000" },
+                    { type: "value", "name": "carno|max|86400000" },
+                    { type: "value", "name": "carno|variance|86400000" }
                 ]},
                 { "time": -24 * 60 * 60 * 1000, "attributes": [                        // 24h ago
-                    { type: "value", "name": "dimml" },
-                    { type: "value", "name": "pact" },
-                    { type: "value", "name": "w" },
-                    { type: "value", "name": "dimml|ma|86400000" },
-                    { type: "value", "name": "dimml|min|86400000" },
-                    { type: "value", "name": "dimml|max|86400000" },
-                    { type: "value", "name": "dimml|variance|86400000" }
+                    { type: "value", "name": "carno" },
+                    { type: "value", "name": "v" },
+                    { type: "value", "name": "carno|ma|86400000" },
+                    { type: "value", "name": "carno|min|86400000" },
+                    { type: "value", "name": "carno|max|86400000" },
+                    { type: "value", "name": "carno|variance|86400000" }
                 ]},
             ]
         }
@@ -116,7 +98,7 @@ function processRecordDummyCb(nodeI, parent) {
     return true;
 }
 
-describe('streamingSmartLampNode', function() {
+describe('streamingTrafficCounterNode', function() {
     let base;
     let sn;
 
@@ -131,7 +113,8 @@ describe('streamingSmartLampNode', function() {
         // ssn = new streamingStaticNode(base, connectionConfig, fusionConfig["nodes"][1], aggrConfigs, null, 99, null);
         // stn = new streamingTrainNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
         // stvn = new streamingTimeValueNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
-        ssln = new streamingSmartLampNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
+        // stcn = new streamingSmartLampNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
+        stcn = new streamingTrafficCounterNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
     });
 
     after(function() {
@@ -140,263 +123,228 @@ describe('streamingSmartLampNode', function() {
 
     describe('initialization', function() {
         it('base saved', function() {
-            assert.equal(base, ssln.base);
+            assert.equal(base, stcn.base);
         });
 
         it ('check if store exists', function() {
-            assert.equal(ssln.rawstore.name, "smartlamp");
+            assert.equal(stcn.rawstore.name, "trafficcounter");
         });
 
         it ('check store structure', function() {
-            assert.deepEqual(ssln.rawstore.fields, [
+            assert.deepEqual(stcn.rawstore.fields, [
                 { id: 0, name: 'Time', type: 'datetime', nullable: false, internal: false, primary: false },
-                { id: 1, name: 'pact', type: 'float', nullable: false, internal: false, primary: false },
-                { id: 2, name: 'dimml', type: 'float', nullable: false, internal: false, primary: false },
-                { id: 3, name: 'w', type: 'float', nullable: false, internal: false, primary: false }
+                { id: 1, name: 'carno', type: 'float', nullable: false, internal: false, primary: false },
+                { id: 2, name: 'v', type: 'float', nullable: false, internal: false, primary: false }
             ]);
         });
 
         it('aggregates initialized - number', function() {
-            assert.equal(Object.keys(ssln.aggregate).length, 39);
+            assert.equal(Object.keys(stcn.aggregate).length, 26);
         });
 
         it('aggregates initialized - key names', function() {
-            assert.deepEqual(Object.keys(ssln.aggregate), [
-                "dimml|tick",
-                "dimml|winbuf|21600000",
-                "dimml|ma|21600000",
-                "dimml|min|21600000",
-                "dimml|max|21600000",
-                "dimml|variance|21600000",
-                "dimml|winbuf|86400000",
-                "dimml|ma|86400000",
-                "dimml|min|86400000",
-                "dimml|max|86400000",
-                "dimml|variance|86400000",
-                "dimml|winbuf|604800000",
-                "dimml|ma|604800000",
-                "pact|tick",
-                "pact|winbuf|21600000",
-                "pact|ma|21600000",
-                "pact|min|21600000",
-                "pact|max|21600000",
-                "pact|variance|21600000",
-                "pact|winbuf|86400000",
-                "pact|ma|86400000",
-                "pact|min|86400000",
-                "pact|max|86400000",
-                "pact|variance|86400000",
-                "pact|winbuf|604800000",
-                "pact|ma|604800000",
-                "w|tick",
-                "w|winbuf|21600000",
-                "w|ma|21600000",
-                "w|min|21600000",
-                "w|max|21600000",
-                "w|variance|21600000",
-                "w|winbuf|86400000",
-                "w|ma|86400000",
-                "w|min|86400000",
-                "w|max|86400000",
-                "w|variance|86400000",
-                "w|winbuf|604800000",
-                "w|ma|604800000"
+            assert.deepEqual(Object.keys(stcn.aggregate), [
+                "carno|tick",
+                "carno|winbuf|21600000",
+                "carno|ma|21600000",
+                "carno|min|21600000",
+                "carno|max|21600000",
+                "carno|variance|21600000",
+                "carno|winbuf|86400000",
+                "carno|ma|86400000",
+                "carno|min|86400000",
+                "carno|max|86400000",
+                "carno|variance|86400000",
+                "carno|winbuf|604800000",
+                "carno|ma|604800000",
+                "v|tick",
+                "v|winbuf|21600000",
+                "v|ma|21600000",
+                "v|min|21600000",
+                "v|max|21600000",
+                "v|variance|21600000",
+                "v|winbuf|86400000",
+                "v|ma|86400000",
+                "v|min|86400000",
+                "v|max|86400000",
+                "v|variance|86400000",
+                "v|winbuf|604800000",
+                "v|ma|604800000"
             ]);
         });
 
         it('config saved', function() {
-            assert.deepEqual(ssln.config, fusionConfig["nodes"][0]);
+            assert.deepEqual(stcn.config, fusionConfig["nodes"][0]);
         });
 
         it('fusionNodeI correctly saved', function() {
-            assert.equal(ssln.fusionNodeI, 99);
+            assert.equal(stcn.fusionNodeI, 99);
         });
 
         it ('callback function should be set', function() {
-            assert.equal(typeof ssln.processRecordCb, "function");
+            assert.equal(typeof stcn.processRecordCb, "function");
         });
 
         it ('parent saved', function() {
-            assert.equal(ssln.parent, null);
+            assert.equal(stcn.parent, null);
         });
 
         it ('buffer empty', function() {
-            assert.deepEqual(ssln.buffer, []);
+            assert.deepEqual(stcn.buffer, []);
         });
 
         it ('buffer position is 0', function() {
-            assert.equal(ssln.position, 0);
+            assert.equal(stcn.position, 0);
         });
 
         it ('master flag set correctly', function() {
-            assert.equal(ssln.master, true);
+            assert.equal(stcn.master, true);
         });
 
         it ('isMaster function', function() {
-            assert.equal(ssln.isMaster(), true);
+            assert.equal(stcn.isMaster(), true);
         });
 
         it ('connectToKafka function exists', function() {
-            assert.equal(typeof ssln.connectToKafka, "function");
+            assert.equal(typeof stcn.connectToKafka, "function");
         });
 
         it ('broadcastAggregates function exists', function() {
-            assert.equal(typeof ssln.broadcastAggregates, "function");
+            assert.equal(typeof stcn.broadcastAggregates, "function");
         });
 
         it ('createAggregates function exists', function() {
-            assert.equal(typeof ssln.createAggregates, "function");
+            assert.equal(typeof stcn.createAggregates, "function");
         });
 
         it ('offsetExists function exists', function() {
-            assert.equal(typeof ssln.offsetExists, "function");
+            assert.equal(typeof stcn.offsetExists, "function");
         });
 
         it ('deleteObsoleteRows function exists', function() {
-            assert.equal(typeof ssln.deleteObsoleteRows, "function");
+            assert.equal(typeof stcn.deleteObsoleteRows, "function");
         });
 
         it ('checkDataAvailability function exists', function() {
-            assert.equal(typeof ssln.checkDataAvailability, "function");
+            assert.equal(typeof stcn.checkDataAvailability, "function");
         });
 
         it ('setSlaveOffset function exists', function() {
-            assert.equal(typeof ssln.setSlaveOffset, "function");
+            assert.equal(typeof stcn.setSlaveOffset, "function");
         });
 
         it ('getOffsetTimestamp function exists', function() {
-            assert.equal(typeof ssln.getOffsetTimestamp, "function");
+            assert.equal(typeof stcn.getOffsetTimestamp, "function");
         });
 
         it ('setMasterOffset function exists', function() {
-            assert.equal(typeof ssln.getOffsetTimestamp, "function");
+            assert.equal(typeof stcn.getOffsetTimestamp, "function");
         });
 
         it ('getAggregates function exists', function() {
-            assert.equal(typeof ssln.getAggregates, "function");
+            assert.equal(typeof stcn.getAggregates, "function");
         });
 
         it ('getPartialFeatureVector function exists', function() {
-            assert.equal(typeof ssln.getPartialFeatureVector, "function");
+            assert.equal(typeof stcn.getPartialFeatureVector, "function");
         });
 
         it ('master set correctly', function() {
-            assert.equal(ssln.isMaster(), true);
+            assert.equal(stcn.isMaster(), true);
         });
 
         it ('master offset set correctly', function() {
-            ssln.setMasterOffset();
-            assert.equal(ssln.position, -1);
+            stcn.setMasterOffset();
+            assert.equal(stcn.position, -1);
         });
 
         it ('slave offset set correctly: no data', function() {
-            assert.equal(ssln.setSlaveOffset(0), false);
+            assert.equal(stcn.setSlaveOffset(0), false);
         });
     });
 
     describe('data insertion', function() {
 
         it ('data record saved correctly', function() {
-            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0, "w": 1 }'));
-            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1, "w": 2 }'));
+            stcn.processRecord(JSON.parse('{"stampm": 1468493071000, "carno": 0.0, "v": 1 }'));
+            stcn.processRecord(JSON.parse('{"stampm": 1468493072000, "carno": 1.0, "v": 2 }'));
 
-            assert.equal(ssln.buffer.length, 2);
-            assert.equal(ssln.buffer[0].dimml, 0.0);
-            assert.equal(ssln.buffer[1].pact, 1.0);
-            assert.equal(ssln.buffer[1].w, 2);
+            assert.equal(stcn.buffer.length, 2);
+            assert.equal(stcn.buffer[0].carno, 0.0);
+            assert.equal(stcn.buffer[1].carno, 1.0);
+            assert.equal(stcn.buffer[1].v, 2);
         });
 
         it ('Empty values in message set to 0', function() {
-            ssln.processRecord(JSON.parse('{"stampm": 1468493073000}'));
-            assert.equal(ssln.buffer.length, 3);
-            assert.equal(ssln.buffer[2].dimml, 0);
+            stcn.processRecord(JSON.parse('{"stampm": 1468493073000}'));
+            assert.equal(stcn.buffer.length, 3);
+            assert.equal(stcn.buffer[2].carno, 0);
         });
 
         it ('stream aggregates calculated correctly for #2 insertion', function() {
-            assert.deepEqual(ssln.buffer[1], {
+            assert.deepEqual(stcn.buffer[1], {
                 "stampm": 1468493072000,
-                "dimml": 1,
-                "dimml|max|21600000": 1,
-                "dimml|max|86400000": 1,
-                "dimml|ma|21600000": 0.5,
-                "dimml|ma|604800000": 0.5,
-                "dimml|ma|86400000": 0.5,
-                "dimml|min|21600000": 0,
-                "dimml|min|86400000": 0,
-                "dimml|variance|21600000": 0.5,
-                "dimml|variance|86400000": 0.5,
-                "pact": 1,
-                "pact|max|21600000": 1,
-                "pact|max|86400000": 1,
-                "pact|ma|21600000": 0.5,
-                "pact|ma|604800000": 0.5,
-                "pact|ma|86400000": 0.5,
-                "pact|min|21600000": 0,
-                "pact|min|86400000": 0,
-                "pact|variance|21600000": 0.5,
-                "pact|variance|86400000": 0.5,
-                "w": 2,
-                "w|max|21600000": 2,
-                "w|max|86400000": 2,
-                "w|ma|21600000": 1.5,
-                "w|ma|604800000": 1.5,
-                "w|ma|86400000": 1.5,
-                "w|min|21600000": 1,
-                "w|min|86400000": 1,
-                "w|variance|21600000": 0.5,
-                "w|variance|86400000": 0.5
+                "carno": 1,
+                "carno|max|21600000": 1,
+                "carno|max|86400000": 1,
+                "carno|ma|21600000": 0.5,
+                "carno|ma|604800000": 0.5,
+                "carno|ma|86400000": 0.5,
+                "carno|min|21600000": 0,
+                "carno|min|86400000": 0,
+                "carno|variance|21600000": 0.5,
+                "carno|variance|86400000": 0.5,
+                "v": 2,
+                "v|max|21600000": 2,
+                "v|max|86400000": 2,
+                "v|ma|21600000": 1.5,
+                "v|ma|604800000": 1.5,
+                "v|ma|86400000": 1.5,
+                "v|min|21600000": 1,
+                "v|min|86400000": 1,
+                "v|variance|21600000": 0.5,
+                "v|variance|86400000": 0.5
             });
         });
 
         it ('9 more data insertions', function() {
             for (let i = 1; i <= 9; i++) {
                 let time = 1468493073000 + i * 1000;
-                let dimml = i + 1;
-                let pact = i + 1;
-                let w = i + 2;
-                ssln.processRecord(JSON.parse('{"stampm":' + time + ',"dimml": ' + dimml + ',"pact": ' + pact + ',"w": ' + w + '}'));
+                let carno = i + 1;
+                let v = i + 2;
+                stcn.processRecord(JSON.parse('{"stampm":' + time + ',"carno": ' + carno + ',"v": ' + v + '}'));
             }
-            assert.equal(ssln.buffer.length,12);
+            assert.equal(stcn.buffer.length,12);
 
-            assert.deepEqual(ssln.buffer[11], {
+            assert.deepEqual(stcn.buffer[11], {
                 "stampm": 1468493082000,
-                "dimml": 10,
-                "dimml|max|21600000": 10,
-                "dimml|max|86400000": 10,
-                "dimml|ma|21600000": 4.583333333333333,
-                "dimml|ma|604800000": 4.583333333333333,
-                "dimml|ma|86400000": 4.583333333333333,
-                "dimml|min|21600000": 0,
-                "dimml|min|86400000": 0,
-                "dimml|variance|21600000": 12.083333333333336,
-                "dimml|variance|86400000": 12.083333333333336,
-                "pact": 10,
-                "pact|max|21600000": 10,
-                "pact|max|86400000": 10,
-                "pact|ma|21600000": 4.583333333333333,
-                "pact|ma|604800000": 4.583333333333333,
-                "pact|ma|86400000": 4.583333333333333,
-                "pact|min|21600000": 0,
-                "pact|min|86400000": 0,
-                "pact|variance|21600000": 12.083333333333336,
-                "pact|variance|86400000": 12.083333333333336,
-                "w": 11,
-                "w|max|21600000": 11,
-                "w|max|86400000": 11,
-                "w|ma|21600000": 5.5,
-                "w|ma|604800000": 5.5,
-                "w|ma|86400000": 5.5,
-                "w|min|21600000": 0,
-                "w|min|86400000": 0,
-                "w|variance|21600000": 13,
-                "w|variance|86400000": 13
+                "carno": 10,
+                "carno|max|21600000": 10,
+                "carno|max|86400000": 10,
+                "carno|ma|21600000": 4.583333333333333,
+                "carno|ma|604800000": 4.583333333333333,
+                "carno|ma|86400000": 4.583333333333333,
+                "carno|min|21600000": 0,
+                "carno|min|86400000": 0,
+                "carno|variance|21600000": 12.083333333333336,
+                "carno|variance|86400000": 12.083333333333336,
+                "v": 11,
+                "v|max|21600000": 11,
+                "v|max|86400000": 11,
+                "v|ma|21600000": 5.5,
+                "v|ma|604800000": 5.5,
+                "v|ma|86400000": 5.5,
+                "v|min|21600000": 0,
+                "v|min|86400000": 0,
+                "v|variance|21600000": 13,
+                "v|variance|86400000": 13
             });
         });
 
         it ('duplicate insertions test', function() {
-            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0, "w": 1 }'));
-            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1, "w": 2 }'));
-            assert.equal(ssln.buffer.length, 12);
+            stcn.processRecord(JSON.parse('{"stampm": 1468493071000, "carno": 0.0, "v": 1 }'));
+            stcn.processRecord(JSON.parse('{"stampm": 1468493072000, "carno": 1.0, "v": 2 }'));
+            assert.equal(stcn.buffer.length, 12);
         });
     });
 });

@@ -64,12 +64,12 @@ class streamingTrafficCounterNode extends streamingNode {
         let v = (isNaN(rec["v"]) || rec["v"] == null) ? 0 : rec["v"];
 
         if (unixts <= this.lastTimestamp) {
-            console.log("Smart Lamp - double timestamp.");
+            console.log("Traffic Counter - double timestamp.");
             return;
         }
 
         if (isNaN(unixts)) {
-            console.log("Timestamp is NaN!");
+            console.log("Traffic Counter - timestamp is NaN!");
             return;
         }
 
