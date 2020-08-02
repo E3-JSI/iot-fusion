@@ -33,24 +33,12 @@ class streamingSmartLampNode extends streamingNode {
             name: this.nodeId,
             fields: [
                 { name: "Time", type: "datetime" },
-                { name: "long", type: "float" },
-                { name: "lat", type: "float" },
-                { name: "icsv", type: "float" },
-                { name: "icat", type: "float" },
-                { name: "itcu1", type: "float" },
-                { name: "itcu2", type: "float" },
-                { name: "speed", type: "float" },
-                { name: "taext", type: "float" },
-                { name: "taint", type: "float" },
-                { name: "ucat", type: "float" },
-                { name: "acc", type: "float" },
-                { name: "pow", type: "float"}
+                { name: "pact", type: "float" },
+                { name: "dimml", type: "float" },
+                { name: "w", type: "float" }
             ]
         });
         this.rawstore = this.base.store(this.nodeId);
-        // acceleration will be calculated from speed
-        this.lastSpeed = 0;
-        this.lastTimestamp = 0;
 
         // create appropriate stream aggregates
         // with selected stream aggregates definition
@@ -69,60 +57,32 @@ class streamingSmartLampNode extends streamingNode {
 
         // TODO: what if we used last-value interpolation instead of zero in the
         //       null?
-        let isoTime = rec["time"];
-        let long = (isNaN(rec["long"]) || rec["long"] == null) ? 0 : rec["long"];
-        let lat = (isNaN(rec["lat"]) || rec["lat"] == null) ? 0 : rec["lat"];
-        let icsv = (isNaN(rec["icsv"]) || rec["icsv"] == null) ? 0 : rec["icsv"];
-        let icat = (isNaN(rec["icat"]) || rec["icat"] == null) ? 0 : rec["icat"];
-        let itcu1 = (isNaN(rec["itcu1"]) || rec["itcu1"] == null) ? 0 : rec["itcu1"];
-        let itcu2 = (isNaN(rec["itcu2"]) || rec["itcu2"] == null) ? 0 : rec["itcu2"];
-        let speed = (isNaN(rec["speed"]) || rec["speed"] == null) ? 0 : rec["speed"];
-        let taext = (isNaN(rec["taext"]) || rec["taext"] == null) ? 0 : rec["taext"];
-        let taint = (isNaN(rec["taint"]) || rec["taint"] == null) ? 0 : rec["taint"];
-        let ucat = (isNaN(rec["ucat"]) || rec["ucat"] == null) ? 0 : rec["ucat"];
+        let isoTime = rec["stampm"];
+        let dimml = (isNaN(rec["dimml"]) || rec["dimml"] == null) ? 0 : rec["dimml"];
+        let pact = (isNaN(rec["pact"]) || rec["pact"] == null) ? 0 : rec["pact"];
+        let w = (isNaN(rec["w"]) || rec["w"] == null) ? 0 : rec["w"];
 
         // unixts
         // QMiner does not parse seconds correctly if time is given with ISO string
         let unixts = Date.parse(isoTime);
 
         if (unixts <= this.lastTimestamp) {
-            console.log("Train - double timestamp.");
+            console.log("Smart Lamp - double timestamp.");
             return;
         }
 
         if (isNaN(unixts)) {
-            console.log("Timetamp is NaN!");
+            console.log("Timestamp is NaN!");
             return;
         }
-
-        // calculate acceleration and power
-        let interval = (unixts - this.lastTimestamp) / 1000;
-        let acc = (speed - this.lastSpeed) / interval;
-        acc = Math.round(acc * 100) / 100;
-        let pow = ucat * icat;
-
-        // remember last values (previous in the next step)
-        this.lastTimestamp = unixts;
-        this.lastSpeed = speed;
 
         // create ghost store record
         this.rawRecord = this.rawstore.newRecord({
             Time: unixts,
-            long: long,
-            lat: lat,
-            icsv: icsv,
-            icat: icat,
-            itcu1: itcu1,
-            itcu2: itcu2,
-            speed: speed,
-            taext: taext,
-            taint: taint,
-            ucat: ucat,
-            acc: acc,
-            pow: pow
+            dimml: dimml,
+            pact: pact,
+            w: w
         });
-
-        console.log(acc, this.rawRecord);
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
         this.rawstore.triggerOnAddCallbacks(this.rawRecord);
@@ -132,20 +92,9 @@ class streamingSmartLampNode extends streamingNode {
         // combining it with current state vector
         let combined = aggregates;
         // update combined vector with current values
-        combined["long"] = long;
-        combined["lat"] = lat;
-        combined["icsv"] = icsv;
-        combined["icat"] = icat;
-        combined["itcu1"] = itcu1;
-        combined["itcu2"] = itcu2;
-        combined["speed"] = speed;
-        combined["taext"] = taext;
-        combined["taint"] = taint;
-        combined["ucat"] = ucat;
-        combined["acc"] = acc;
-        combined["pow"] = pow;
-
-        console.log(combined);
+        combined["dimml"] = dimml;
+        combined["pact"] = pact;
+        combined["w"] = w;
 
         // push the vector in the buffer
         this.buffer.push(combined);
@@ -159,4 +108,4 @@ class streamingSmartLampNode extends streamingNode {
 
 }
 
-module.exports = streamingTrainNode;
+module.exports = streamingSmartLampNode;
