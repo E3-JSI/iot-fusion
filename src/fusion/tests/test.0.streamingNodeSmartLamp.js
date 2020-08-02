@@ -18,27 +18,58 @@ let connectionConfig = {
 
 // basic aggregate config
 let aggrConfigs = {
-    "timevalue": [
-        { "field": "value", "tick": [
+    "smartlamp": [
+        { "field": "dimml", "tick": [
             { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
-                { "type": "ma" }
-            ]},
-            { "type": "winbuf", "winsize": 12 * 60 * 60 * 1000, "sub": [         // 12s
-                {"type": "ma" },
-                {"type": "min" },
-                {"type": "max" },
-                {"type": "variance" }
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
             ]},
             { "type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [         // 1d
-                {"type": "ma" },
-                {"type": "min" },
-                {"type": "max" },
-                {"type": "variance" }
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
             ]},
-            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [         // 1w
+            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
                 { "type": "ma" }
             ]}
-        ]}
+        ]},
+        { "field": "pact", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]},
+            { "type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [         // 1d
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]},
+            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
+                { "type": "ma" }
+            ]}
+        ]},
+        { "field": "w", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]},
+            { "type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [         // 1d
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]},
+            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
+                { "type": "ma" }
+            ]}
+        ]},
     ]
 };
 
@@ -46,11 +77,11 @@ let aggrConfigs = {
 // for testing reasons we are overriding fusionTick, which is in each node
 // otherwise inherited from fusionConfig
 let fusionConfig = {
-    "fusionModel": "timevalue",
+    "fusionModel": "smartlamp",
     "connection": {
         "type": "mqtt"
     },
-    "fusionTick": 60 * 60 * 1000,
+    "fusionTick": 60 * 60 * 1000,                                           // 1h
     "nodes": [
         {
             "type": "timevalue",
@@ -58,19 +89,23 @@ let fusionConfig = {
             "aggrConfigId": "timevalue",
             "master": true,
             "attributes": [
-                { "time": 0, "attributes": [                                // current time
-                    { type: "value", "name": "value" },
-                    { type: "value", "name": "value|ma|86400000" },
-                    { type: "value", "name": "value|min|86400000" },
-                    { type: "value", "name": "value|max|86400000" },
-                    { type: "value", "name": "value|variance|86400000" }
+                { "time": 0, "attributes": [                                           // current time
+                    { type: "value", "name": "dimml" },
+                    { type: "value", "name": "pact|ma|21600" },
+                    { type: "value", "name": "w|ma|21600" },
+                    { type: "value", "name": "dimml|ma|86400000" },
+                    { type: "value", "name": "dimml|min|86400000" },
+                    { type: "value", "name": "dimml|max|86400000" },
+                    { type: "value", "name": "dimml|variance|86400000" }
                 ]},
                 { "time": -24 * 60 * 60 * 1000, "attributes": [                        // 24h ago
-                    { type: "value", "name": "value" },
-                    { type: "value", "name": "value|ma|86400000" },
-                    { type: "value", "name": "value|min|86400000" },
-                    { type: "value", "name": "value|max|86400000" },
-                    { type: "value", "name": "value|variance|86400000" }
+                    { type: "value", "name": "dimml" },
+                    { type: "value", "name": "pact" },
+                    { type: "value", "name": "w" },
+                    { type: "value", "name": "dimml|ma|86400000" },
+                    { type: "value", "name": "dimml|min|86400000" },
+                    { type: "value", "name": "dimml|max|86400000" },
+                    { type: "value", "name": "dimml|variance|86400000" }
                 ]},
             ]
         }
@@ -95,7 +130,8 @@ describe('streamingTimeValueNode', function() {
         // swn = new streamingWeatherNode(base, connectionConfig, fusionConfig["nodes"][2], aggrConfigs, null, 99, null);
         // ssn = new streamingStaticNode(base, connectionConfig, fusionConfig["nodes"][1], aggrConfigs, null, 99, null);
         // stn = new streamingTrainNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
-        stvn = new streamingTimeValueNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
+        // stvn = new streamingTimeValueNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
+        ssln = new streamingSmartLampNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
     });
 
     after(function() {
@@ -104,26 +140,26 @@ describe('streamingTimeValueNode', function() {
 
     describe('initialization', function() {
         it('base saved', function() {
-            assert.equal(base, stvn.base);
+            assert.equal(base, ssln.base);
         });
 
         it ('check if store exists', function() {
-            assert.equal(stvn.rawstore.name, "timevalue");
+            assert.equal(ssln.rawstore.name, "timevalue");
         });
 
         it ('check store structure', function() {
-            assert.deepEqual(stvn.rawstore.fields, [
+            assert.deepEqual(ssln.rawstore.fields, [
                 { id: 0, name: 'Time', type: 'datetime', nullable: false, internal: false, primary: false },
                 { id: 1, name: 'value', type: 'float', nullable: false, internal: false, primary: false }
             ]);
         });
 
         it('aggregates initialized - number', function() {
-            assert.equal(Object.keys(stvn.aggregate).length, 15);
+            assert.equal(Object.keys(ssln.aggregate).length, 15);
         });
 
         it('aggregates initialized - key names', function() {
-            assert.deepEqual(Object.keys(stvn.aggregate), [
+            assert.deepEqual(Object.keys(ssln.aggregate), [
                 "value|tick",
                 "value|winbuf|21600000",
                 "value|ma|21600000",
@@ -142,6 +178,7 @@ describe('streamingTimeValueNode', function() {
             ]);
         });
 
+        /*
         it('config saved', function() {
             assert.deepEqual(stvn.config, fusionConfig["nodes"][0]);
         });
@@ -230,8 +267,10 @@ describe('streamingTimeValueNode', function() {
         it ('slave offset set correctly: no data', function() {
             assert.equal(stvn.setSlaveOffset(0), false);
         });
+        */
     });
 
+    /*
     describe('data insertion', function() {
 
         it ('data record saved correctly', function() {
@@ -297,4 +336,5 @@ describe('streamingTimeValueNode', function() {
         });
 
     });
+    */
 });
