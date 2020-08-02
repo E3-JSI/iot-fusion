@@ -65,7 +65,7 @@ class streamingAirQualityNode extends streamingNode {
         //       null?
         let unixts = rec["stampm"];
         let rh = (isNaN(rec["rh"]) || rec["rh"] == null) ? 0 : rec["rh"];
-        let v = (isNaN(rec["t"]) || rec["t"] == null) ? 0 : rec["t"];
+        let t = (isNaN(rec["t"]) || rec["t"] == null) ? 0 : rec["t"];
         let no2 = (isNaN(rec["no2"]) || rec["no2"] == null) ? 0 : rec["no2"];
         let o3 = (isNaN(rec["o3"]) || rec["o3"] == null) ? 0 : rec["o3"];
         let pm025 = (isNaN(rec["pm025"]) || rec["pm025"] == null) ? 0 : rec["pm025"];
