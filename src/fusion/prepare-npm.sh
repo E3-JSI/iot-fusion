@@ -9,8 +9,9 @@ cp package.json ./dist
 cp conf ./dist -r
 cp nodes ./dist -r
 cp tests ./dist -r
-cp ../common/utils ./dist -r
-cp ../common/brokers ./dist -r
+mkdir ./dist/common
+cp ../common/utils ./dist/common/utils -r
+cp ../common/brokers ./dist/common/brokers -r
 
 # obfuscate
 cd dist
@@ -34,11 +35,11 @@ javascript-obfuscator conf/smartmeter_pc.js --output conf/smartmeter_pc.js --sel
 javascript-obfuscator conf/smartmeter_pg.js --output conf/smartmeter_pg.js --self-defending true --compact true
 javascript-obfuscator conf/train.js --output conf/train.js --self-defending true --compact true
 javascript-obfuscator conf/substation.js --output conf/substation.js --self-defending true --compact true
-javascript-obfuscator brokers/abstract.js --output brokers/abstract.js --self-defending true --compact true
-javascript-obfuscator brokers/brokers.js --output brokers/brokers.js --self-defending true --compact true
-javascript-obfuscator brokers/kafka-node.js --output brokers/kafka-node.js --self-defending true --compact true
-javascript-obfuscator brokers/mqtt.js --output brokers/mqtt.js --self-defending true --compact true
-javascript-obfuscator brokers/node-rdkafka.js --output brokers/node-rdkafka.js --self-defending true --compact true
+javascript-obfuscator common/brokers/abstract.js --output common/brokers/abstract.js --self-defending true --compact true
+javascript-obfuscator common/brokers/brokers.js --output common/brokers/brokers.js --self-defending true --compact true
+javascript-obfuscator common/brokers/kafka-node.js --output common/brokers/kafka-node.js --self-defending true --compact true
+javascript-obfuscator common/brokers/mqtt.js --output common/brokers/mqtt.js --self-defending true --compact true
+javascript-obfuscator common/brokers/node-rdkafka.js --output common/brokers/node-rdkafka.js --self-defending true --compact true
 
 javascript-obfuscator tests/test.1.streamingNode.js --output tests/test.1.streamingNode.js --self-defending true --compact true
 javascript-obfuscator tests/test.2.streamingNodeEnergy.js --output tests/test.2.streamingNodeEnergy.js --self-defending true --compact true
@@ -56,6 +57,7 @@ javascript-obfuscator tests/test.91.streamFusionFactory.js --output tests/test.9
 # find replace pointers to common
 sed -i 's/..\/common/.\/common/g' streamFusion.js
 sed -i 's/..\/common/.\/common/g' streamMaster.js
+sed -i 's/..\/..\/common/..\/common/g' nodes/streamingNode.js
 
 cd ..
 
