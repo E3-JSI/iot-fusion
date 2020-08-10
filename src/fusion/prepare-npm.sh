@@ -9,8 +9,8 @@ cp package.json ./dist
 cp conf ./dist -r
 cp nodes ./dist -r
 cp tests ./dist -r
-cp utils ./dist -r
-cp brokers ./dist -r
+cp ../common/utils ./dist -r
+cp ../common/brokers ./dist -r
 
 # obfuscate
 cd dist
@@ -53,6 +53,9 @@ javascript-obfuscator tests/test.10.streamingNodeAirQuality.js --output tests/te
 javascript-obfuscator tests/test.90.streamFusion.js --output tests/test.90.streamFusion.js --self-defending true --compact true
 javascript-obfuscator tests/test.91.streamFusionFactory.js --output tests/test.90.streamFusionFactory.js --self-defending true --compact true
 
+# find replace pointers to common
+sed -i 's/..\/common/.\/common/g' streamFusion.js
+sed -i 's/..\/common/.\/common/g' streamMaster.js
 
 cd ..
 

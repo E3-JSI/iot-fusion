@@ -11,9 +11,7 @@
   "author": "Klemen Kenda",
   "license": "ISC",
   "dependencies": {
-    "kafka-node": "^2.6.1",
-    "mqtt": "^2.18.2",
-    "qminer": "^9.2.3npm "
+    "qminer": "^9.2.3"
   },
   "devDependencies": {
     "mocha": "^4.0.1"
