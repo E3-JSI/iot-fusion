@@ -52,24 +52,7 @@ let aggrConfigs = {
             { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
                 { "type": "ma" }
             ]}
-        ]},
-        { "field": "w", "tick": [
-            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
-                { "type": "ma" },
-                { "type": "min" },
-                { "type": "max" },
-                { "type": "variance" }
-            ]},
-            { "type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [         // 1d
-                { "type": "ma" },
-                { "type": "min" },
-                { "type": "max" },
-                { "type": "variance" }
-            ]},
-            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [     // 1w
-                { "type": "ma" }
-            ]}
-        ]},
+        ]}
     ]
 };
 
@@ -92,7 +75,6 @@ let fusionConfig = {
                 { "time": 0, "attributes": [                                           // current time
                     { type: "value", "name": "dimml" },
                     { type: "value", "name": "pact|ma|21600" },
-                    { type: "value", "name": "w|ma|21600" },
                     { type: "value", "name": "dimml|ma|86400000" },
                     { type: "value", "name": "dimml|min|86400000" },
                     { type: "value", "name": "dimml|max|86400000" },
@@ -101,7 +83,6 @@ let fusionConfig = {
                 { "time": -24 * 60 * 60 * 1000, "attributes": [                        // 24h ago
                     { type: "value", "name": "dimml" },
                     { type: "value", "name": "pact" },
-                    { type: "value", "name": "w" },
                     { type: "value", "name": "dimml|ma|86400000" },
                     { type: "value", "name": "dimml|min|86400000" },
                     { type: "value", "name": "dimml|max|86400000" },
@@ -151,13 +132,12 @@ describe('streamingSmartLampNode', function() {
             assert.deepEqual(ssln.rawstore.fields, [
                 { id: 0, name: 'Time', type: 'datetime', nullable: false, internal: false, primary: false },
                 { id: 1, name: 'pact', type: 'float', nullable: false, internal: false, primary: false },
-                { id: 2, name: 'dimml', type: 'float', nullable: false, internal: false, primary: false },
-                { id: 3, name: 'w', type: 'float', nullable: false, internal: false, primary: false }
+                { id: 2, name: 'dimml', type: 'float', nullable: false, internal: false, primary: false }
             ]);
         });
 
         it('aggregates initialized - number', function() {
-            assert.equal(Object.keys(ssln.aggregate).length, 39);
+            assert.equal(Object.keys(ssln.aggregate).length, 26);
         });
 
         it('aggregates initialized - key names', function() {
@@ -187,20 +167,7 @@ describe('streamingSmartLampNode', function() {
                 "pact|max|86400000",
                 "pact|variance|86400000",
                 "pact|winbuf|604800000",
-                "pact|ma|604800000",
-                "w|tick",
-                "w|winbuf|21600000",
-                "w|ma|21600000",
-                "w|min|21600000",
-                "w|max|21600000",
-                "w|variance|21600000",
-                "w|winbuf|86400000",
-                "w|ma|86400000",
-                "w|min|86400000",
-                "w|max|86400000",
-                "w|variance|86400000",
-                "w|winbuf|604800000",
-                "w|ma|604800000"
+                "pact|ma|604800000"
             ]);
         });
 
@@ -297,13 +264,12 @@ describe('streamingSmartLampNode', function() {
     describe('data insertion', function() {
 
         it ('data record saved correctly', function() {
-            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0, "w": 1 }'));
-            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1, "w": 2 }'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0 }'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1 }'));
 
             assert.equal(ssln.buffer.length, 2);
             assert.equal(ssln.buffer[0].dimml, 0.0);
             assert.equal(ssln.buffer[1].pact, 1.0);
-            assert.equal(ssln.buffer[1].w, 2);
         });
 
         it ('Empty values in message set to 0', function() {
@@ -334,17 +300,7 @@ describe('streamingSmartLampNode', function() {
                 "pact|min|21600000": 0,
                 "pact|min|86400000": 0,
                 "pact|variance|21600000": 0.5,
-                "pact|variance|86400000": 0.5,
-                "w": 2,
-                "w|max|21600000": 2,
-                "w|max|86400000": 2,
-                "w|ma|21600000": 1.5,
-                "w|ma|604800000": 1.5,
-                "w|ma|86400000": 1.5,
-                "w|min|21600000": 1,
-                "w|min|86400000": 1,
-                "w|variance|21600000": 0.5,
-                "w|variance|86400000": 0.5
+                "pact|variance|86400000": 0.5
             });
         });
 
@@ -353,8 +309,7 @@ describe('streamingSmartLampNode', function() {
                 let time = 1468493073000 + i * 1000;
                 let dimml = i + 1;
                 let pact = i + 1;
-                let w = i + 2;
-                ssln.processRecord(JSON.parse('{"stampm":' + time + ',"dimml": ' + dimml + ',"pact": ' + pact + ',"w": ' + w + '}'));
+                ssln.processRecord(JSON.parse('{"stampm":' + time + ',"dimml": ' + dimml + ',"pact": ' + pact + '}'));
             }
             assert.equal(ssln.buffer.length,12);
 
@@ -379,23 +334,13 @@ describe('streamingSmartLampNode', function() {
                 "pact|min|21600000": 0,
                 "pact|min|86400000": 0,
                 "pact|variance|21600000": 12.083333333333336,
-                "pact|variance|86400000": 12.083333333333336,
-                "w": 11,
-                "w|max|21600000": 11,
-                "w|max|86400000": 11,
-                "w|ma|21600000": 5.5,
-                "w|ma|604800000": 5.5,
-                "w|ma|86400000": 5.5,
-                "w|min|21600000": 0,
-                "w|min|86400000": 0,
-                "w|variance|21600000": 13,
-                "w|variance|86400000": 13
+                "pact|variance|86400000": 12.083333333333336
             });
         });
 
         it ('duplicate insertions test', function() {
-            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0, "w": 1 }'));
-            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1, "w": 2 }'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493071000, "pact": 0.0, "dimml": 0 }'));
+            ssln.processRecord(JSON.parse('{"stampm": 1468493072000, "pact": 1.0, "dimml": 1 }'));
             assert.equal(ssln.buffer.length, 12);
         });
     });

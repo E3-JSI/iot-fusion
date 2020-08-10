@@ -38,7 +38,7 @@ let aggrConfigs = {
                 { "type": "ma" }
             ]}
         ]},
-        { "field": "t", "tick": [
+        { "field": "temp", "tick": [
             { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
                 { "type": "ma" },
                 { "type": "min" },

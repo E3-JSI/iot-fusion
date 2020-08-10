@@ -34,8 +34,7 @@ class streamingSmartLampNode extends streamingNode {
             fields: [
                 { name: "Time", type: "datetime" },
                 { name: "pact", type: "float" },
-                { name: "dimml", type: "float" },
-                { name: "w", type: "float" }
+                { name: "dimml", type: "float" }
             ]
         });
         this.rawstore = this.base.store(this.nodeId);
@@ -63,7 +62,6 @@ class streamingSmartLampNode extends streamingNode {
         let unixts = rec["stampm"];
         let dimml = (isNaN(rec["dimml"]) || rec["dimml"] == null) ? 0 : rec["dimml"];
         let pact = (isNaN(rec["pact"]) || rec["pact"] == null) ? 0 : rec["pact"];
-        let w = (isNaN(rec["w"]) || rec["w"] == null) ? 0 : rec["w"];
 
         if (unixts <= this.lastTimestamp) {
             console.log("Smart Lamp - double timestamp.");
@@ -79,8 +77,7 @@ class streamingSmartLampNode extends streamingNode {
         this.rawRecord = this.rawstore.newRecord({
             Time: unixts,
             dimml: dimml,
-            pact: pact,
-            w: w
+            pact: pact
         });
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
@@ -94,7 +91,6 @@ class streamingSmartLampNode extends streamingNode {
         // update combined vector with current values
         combined["dimml"] = dimml;
         combined["pact"] = pact;
-        combined["w"] = w;
 
         // push the vector in the buffer
         this.buffer.push(combined);

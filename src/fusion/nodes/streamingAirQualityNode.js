@@ -34,13 +34,19 @@ class streamingAirQualityNode extends streamingNode {
             fields: [
                 { name: "Time", type: "datetime" },
                 { name: "rh", type: "float" },      // relative humidity
-                { name: "t", type: "float" },       // temperature
+                { name: "temp", type: "float" },       // temperature
                 { name: "no2", type: "float" },
                 { name: "o3", type: "float" },
                 { name: "pm025", type: "float" },
-                { name: "pm100", type: "float" }
+                { name: "pm100", type: "float" },
+                { name: "carno", type: "float" },
+                { name: "vavg", type: "float" },
+                { name: "vmax", type: "float" },
+                { name: "vmin", type: "float" },
+                { name: "w", type: "float" }
             ]
         });
+
         this.rawstore = this.base.store(this.nodeId);
 
         // initialize last timestamp
@@ -65,11 +71,16 @@ class streamingAirQualityNode extends streamingNode {
         //       null?
         let unixts = rec["stampm"];
         let rh = (isNaN(rec["rh"]) || rec["rh"] == null) ? 0 : rec["rh"];
-        let t = (isNaN(rec["t"]) || rec["t"] == null) ? 0 : rec["t"];
+        let temp = (isNaN(rec["temp"]) || rec["temp"] == null) ? 0 : rec["temp"];
         let no2 = (isNaN(rec["no2"]) || rec["no2"] == null) ? 0 : rec["no2"];
         let o3 = (isNaN(rec["o3"]) || rec["o3"] == null) ? 0 : rec["o3"];
         let pm025 = (isNaN(rec["pm025"]) || rec["pm025"] == null) ? 0 : rec["pm025"];
         let pm100 = (isNaN(rec["pm100"]) || rec["pm100"] == null) ? 0 : rec["pm100"];
+        let carno = (isNaN(rec["carno"]) || rec["carno"] == null) ? 0 : rec["carno"];
+        let vavg = (isNaN(rec["vavg"]) || rec["vavg"] == null) ? 0 : rec["vavg"];
+        let vmax = (isNaN(rec["vmax"]) || rec["vmax"] == null) ? 0 : rec["vmax"];
+        let vmin = (isNaN(rec["vmin"]) || rec["vmin"] == null) ? 0 : rec["vmin"];
+        let w = (isNaN(rec["w"]) || rec["w"] == null) ? 0 : rec["w"];
 
         if (unixts <= this.lastTimestamp) {
             console.log("Air Quality - double timestamp.");
@@ -85,11 +96,16 @@ class streamingAirQualityNode extends streamingNode {
         this.rawRecord = this.rawstore.newRecord({
             Time: unixts,
             rh: rh,
-            t: t,
+            temp: temp,
             no2: no2,
             o3: o3,
             pm025: pm025,
-            pm100: pm100
+            pm100: pm100,
+            carno: carno,
+            vavg: vavg,
+            vmax: vmax,
+            vmin: vmin,
+            w: w
         });
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
@@ -107,6 +123,11 @@ class streamingAirQualityNode extends streamingNode {
         combined["o3"] = o3;
         combined["pm025"] = pm025;
         combined["pm100"] = pm100;
+        combined["carno"] = carno;
+        combined["vavg"] = vavg;
+        combined["vmax"] = vmax;
+        combined["vmin"] = vmin;
+        combined["w"] = w;
 
         // push the vector in the buffer
         this.buffer.push(combined);
