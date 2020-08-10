@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nrg-stream-fusion": "^1.3.3"
+    "nrg-stream-fusion": "^1.4.0"
   }
 }
