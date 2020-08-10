@@ -86,6 +86,46 @@ let aggrConfigs = {
                 { "type": "max" },
                 { "type": "variance" }
             ]}
+        ]},
+        { "field": "carno", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]}
+        ]},
+        { "field": "vavg", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]}
+        ]},
+        { "field": "vmax", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]}
+        ]},
+        { "field": "vmin", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]}
+        ]},
+        { "field": "w", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" },
+                { "type": "min" },
+                { "type": "max" },
+                { "type": "variance" }
+            ]}
         ]}
     ]
 };
@@ -112,7 +152,10 @@ let fusionConfig = {
                     { type: "value", "name": "no2|ma|86400000" },
                     { type: "value", "name": "o3|min|86400000" },
                     { type: "value", "name": "pm025|max|86400000" },
-                    { type: "value", "name": "pm100|variance|86400000" }
+                    { type: "value", "name": "pm100|variance|86400000" },
+                    { type: "value", "name": "vavg|ma|86400000" },
+                    { type: "value", "name": "w|ma|86400000" },
+                    { type: "value", "name": "carno|ma|86400000" }
                 ]},
                 { "time": -24 * 60 * 60 * 1000, "attributes": [                        // 24h ago
                     { type: "value", "name": "pm100" },

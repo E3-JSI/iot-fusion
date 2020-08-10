@@ -118,7 +118,7 @@ class streamingAirQualityNode extends streamingNode {
         let combined = aggregates;
         // update combined vector with current values
         combined["rh"] = rh;
-        combined["t"] = t;
+        combined["temp"] = temp;
         combined["no2"] = no2;
         combined["o3"] = o3;
         combined["pm025"] = pm025;
