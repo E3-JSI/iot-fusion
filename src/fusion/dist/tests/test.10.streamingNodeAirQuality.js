@@ -6,7 +6,7 @@ const streamingTimeValueNode = require('../nodes/streamingTimeValueNode.js');
 const streamingSmartLampNode = require('../nodes/streamingSmartLampNode.js');
 const streamingTrafficCounterNode = require('../nodes/streamingTrafficCounterNode.js');
 const streamingAirQualityNode = require('../nodes/streamingAirQualityNode.js');
-const fileManager = require('../../common/utils/fileManager.js');
+const fileManager = require('../common/utils/fileManager.js');
 const qm = require('qminer');
 const fs = require('fs');
 
