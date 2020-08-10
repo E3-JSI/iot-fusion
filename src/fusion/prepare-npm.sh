@@ -12,6 +12,8 @@ cp tests ./dist -r
 mkdir ./dist/common
 cp ../common/utils ./dist/common/utils -r
 cp ../common/brokers ./dist/common/brokers -r
+mkdir ./dist/data
+echo Holder > holder.txt
 
 # obfuscate
 cd dist
@@ -52,12 +54,13 @@ javascript-obfuscator tests/test.8.streamingNodeSmartLamp.js --output tests/test
 javascript-obfuscator tests/test.9.streamingNodeTrafficCounter.js --output tests/test.6.streamingNodeTrafficCounter.js --self-defending true --compact true
 javascript-obfuscator tests/test.10.streamingNodeAirQuality.js --output tests/test.6.streamingNodeAirQuality.js --self-defending true --compact true
 javascript-obfuscator tests/test.90.streamFusion.js --output tests/test.90.streamFusion.js --self-defending true --compact true
-javascript-obfuscator tests/test.91.streamFusionFactory.js --output tests/test.90.streamFusionFactory.js --self-defending true --compact true
+javascript-obfuscator tests/test.91.streamFusionFactory.js --output tests/test.91.streamFusionFactory.js --self-defending true --compact true
 
 # find replace pointers to common
 sed -i 's/..\/common/.\/common/g' streamFusion.js
 sed -i 's/..\/common/.\/common/g' streamMaster.js
 sed -i 's/..\/..\/common/..\/common/g' nodes/streamingNode.js
+sed -i 's/..\/..\/common/..\/common/g' tests/*
 
 cd ..
 
