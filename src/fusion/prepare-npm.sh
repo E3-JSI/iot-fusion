@@ -13,7 +13,7 @@ mkdir ./dist/common
 cp ../common/utils ./dist/common/utils -r
 cp ../common/brokers ./dist/common/brokers -r
 mkdir ./dist/data
-echo Holder > holder.txt
+echo Holder > ./dist/data/holder.txt
 
 # obfuscate
 cd dist

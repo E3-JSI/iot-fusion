@@ -18,11 +18,22 @@ class streamingWeatherNode extends streamingNode {
         // call super constructor
         super(base, connectionConfig, config,  aggrConfigs, processRecordCb, fusionNodeI, parent);
 
+        // read config options
+        this.datasize = config["datasize"] === undefined ? 48 : config["datasize"];
+        this.datatype = config["datatype"] === undefined ? "hourly" : config["datatype"];
+
         // adding store
         // generating fields
         this.fields = [];
-        this.fieldTypes = [ "temperature", "humidity", "pressure", "windSpeed", "windBearing", "cloudCover" ];
-        for (let i = 0; i < 48; i++) {
+        this.fieldTypes = config["fieldtypes"] === undefined ?
+            [ "temperature", "humidity", "pressure", "windSpeed", "windBearing", "cloudCover" ] :
+            config["fieldtypes"];
+
+
+        console.log(this.datatype, this.fieldTypes);
+
+
+        for (let i = 0; i < this.datasize; i++) {
             for (let j in this.fieldTypes) {
                 let fieldName = this.fieldTypes[j] + i;
                 this.fields.push({ name: fieldName, type: "float" });
@@ -55,16 +66,16 @@ class streamingWeatherNode extends streamingNode {
         // extract record from rec (according to the store construction)
         let record = {};
 
-        if (("hourly" in rec) && ("data" in rec.hourly) && (rec.hourly.data.length >= 48)) {
+        if ((this.datatype in rec) && ("data" in rec[this.datatype]) && (rec[this.datatype].data.length >= this.datasize)) {
             // setting stampm manually since we do not have getAggregates function
             record["stampm"] = rec.currently.time * 1000;
 
             // populate other record properties
             // this.fieldTypes is already set from constructor
-            for (let i = 0; i < 48; i++) {
+            for (let i = 0; i < this.datasize; i++) {
                 for (let j in this.fieldTypes) {
                     let fieldName = this.fieldTypes[j] + i;
-                    record[fieldName] = rec.hourly.data[i][this.fieldTypes[j]];
+                    record[fieldName] = rec[this.datatype].data[i][this.fieldTypes[j]];
                     // convert potential null value to 0
                     if (record[fieldName] == null) rec[fieldName] = 0;
                 }
@@ -78,7 +89,7 @@ class streamingWeatherNode extends streamingNode {
             // call streamFusion hook for this sensor
             this.processRecordCb(this.fusionNodeI, this.parent);
         } else {
-            console.log("NO WEATHER/WEATHER RECORD TOO SHORT (48 hourly records needed)!");
+            console.log("NO WEATHER/WEATHER RECORD TOO SHORT (" + this.datasize + " "  + this.datatype + " records needed)!");
         }
     }
 }
