@@ -366,9 +366,28 @@ describe('streamingWeatherNode', function() {
         });
 
         it ('data record record saved correctly', function() {
-            let json = JSON.parse('{"latitude":45.95472,"longitude":13.664836,"timezone":"Europe/Ljubljana","currently":{"time": 0},"hourly":{"data":[{"time":1388530800,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":41.68,"apparentTemperature":37.87,"dewPoint":36.19,"humidity":0.81,"pressure":1020.1,"windSpeed":5.82,"windBearing":92,"cloudCover":0.18,"uvIndex":0,"visibility":6.67},{"time":1388534400,"summary":"Partly Cloudy","icon":"partly-cloudy-night","precipIntensity":0,"precipProbability":0,"temperature":39.92,"apparentTemperature":39.92,"dewPoint":34.75,"humidity":0.82,"pressure":1019.69,"windSpeed":2.83,"windBearing":58,"cloudCover":0.42,"uvIndex":0,"visibility":6.18},{"time":1388538000,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":39.8,"apparentTemperature":36.94,"dewPoint":34.18,"humidity":0.8,"pressure":1019.3,"windSpeed":4.16,"windBearing":112,"cloudCover":0.18,"uvIndex":0,"visibility":7.03},{"time":1388541600,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":39.18,"apparentTemperature":33.08,"dewPoint":34.93,"humidity":0.85,"pressure":1019.3,"windSpeed":9,"windBearing":120,"cloudCover":0.18,"uvIndex":0,"visibility":7.03},{"time":1388545200,"summary":"Partly Cloudy","icon":"partly-cloudy-night","precipIntensity":0,"precipProbability":0,"temperature":36.02,"apparentTemperature":33.56,"dewPoint":31.67,"humidity":0.84,"pressure":1019.26,"windSpeed":3.25,"windBearing":239,"cloudCover":0.59,"uvIndex":0,"visibility":5.68},{"time":1388548800,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":39.28,"apparentTemperature":32.75,"dewPoint":34.94,"humidity":0.84,"pressure":1019.1,"windSpeed":10,"windBearing":120,"visibility":7.03},{"time":1388552400,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":39.88,"apparentTemperature":36.59,"dewPoint":35.76,"humidity":0.85,"pressure":1019,"windSpeed":4.68,"windBearing":120,"visibility":6.67},{"time":1388556000,"summary":"Mostly Cloudy","icon":"partly-cloudy-night","precipIntensity":0,"precipProbability":0,"temperature":35.13,"apparentTemperature":35.13,"dewPoint":32.58,"humidity":0.9,"pressure":1019.2,"windSpeed":0.14,"windBearing":156,"cloudCover":0.77,"uvIndex":0,"visibility":7.75}]}}');
+            let json = JSON.parse('{"latitude":45.95472,"longitude":13.664836,"timezone":"Europe/Ljubljana","currently":{"time": 0},"daily":{"data":[{"time":1388530800,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":41.68,"apparentTemperature":37.87,"dewPoint":36.19,"humidity":0.81,"pressure":1020.1,"windSpeed":5.82,"windBearing":92,"cloudCover":0.18,"uvIndex":0,"visibility":6.67},{"time":1388534400,"summary":"Partly Cloudy","icon":"partly-cloudy-night","precipIntensity":0,"precipProbability":0,"temperature":39.92,"apparentTemperature":39.92,"dewPoint":34.75,"humidity":0.82,"pressure":1019.69,"windSpeed":2.83,"windBearing":58,"cloudCover":0.42,"uvIndex":0,"visibility":6.18},{"time":1388538000,"summary":"Clear","icon":"clear-night","precipType":"rain","temperature":39.8,"apparentTemperature":36.94,"dewPoint":34.18,"humidity":0.8,"pressure":1019.3,"windSpeed":4.16,"windBearing":112,"cloudCover":0.18,"uvIndex":0,"visibility":7.03, "daylight": 1}]}}');
 
             swn3.processRecord(json);
+
+            assert.equal(swn3.buffer.length, 1);
+
+            let viable = [ 'humidity', 'pressure', 'windSpeed', 'windBearing', 'cloudCover', 'temperature', 'daylight'];
+
+            for (let i = 0; i < 3; i++) {
+                let keys = Object.keys(json.daily.data[i]);
+                for (let j = 0; j < keys.length; j++) {
+                    let key = keys[j];
+                    let storekey = key + i;
+                    if (viable.indexOf(key) >= 0) {
+                        console.log(storekey, swn3.buffer[0][storekey]);
+
+                        //console.log(storekey, swn.buffer[0][storekey], json.hourly.data[i][key]);
+                        assert.equal(swn3.buffer[0][storekey], json.daily.data[i][key]);
+                    }
+                }
+
+            }
         });
     });
 
