@@ -380,8 +380,6 @@ describe('streamingWeatherNode', function() {
                     let key = keys[j];
                     let storekey = key + i;
                     if (viable.indexOf(key) >= 0) {
-                        console.log(storekey, swn3.buffer[0][storekey]);
-
                         //console.log(storekey, swn.buffer[0][storekey], json.hourly.data[i][key]);
                         assert.equal(swn3.buffer[0][storekey], json.daily.data[i][key]);
                     }
