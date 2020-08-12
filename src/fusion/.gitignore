@@ -1,4 +1,4 @@
-data/
+data/*.json
 db2/
 db3/
 db4/
