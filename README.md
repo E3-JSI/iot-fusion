@@ -7,6 +7,9 @@ IoT fusion is a streaming data fusion system that can create machine-learning-re
 * server (administrative server for communication with distributed fusion components)
 * client (GUI for interaction with server nad further with fusion components)
 
+# Docs
+Documentation is available [here](docs/USERS-MANUAL.md).
+
 # Publications
 In case you use any of the components for your research, please refer to (and cite) the paper:
 * [Kenda, K.; Kažič, B.; Novak, E.; Mladenić, D. Streaming Data Fusion for the Internet of Things. Sensors 2019, 19, 1955.](https://www.mdpi.com/1424-8220/19/8/1955)
