@@ -24,7 +24,9 @@ class streamingWeatherNode extends streamingNode {
         // adding store
         // generating fields
         this.fields = [];
-        this.fieldTypes = [ "temperature", "humidity", "pressure", "windSpeed", "windBearing", "cloudCover" ];
+        this.fieldTypes = config["fieldtypes"] === undefined ?
+            [ "temperature", "humidity", "pressure", "windSpeed", "windBearing", "cloudCover" ] :
+            config["fieldtypes"];
         for (let i = 0; i < this.datasize; i++) {
             for (let j in this.fieldTypes) {
                 let fieldName = this.fieldTypes[j] + i;
