@@ -18,11 +18,14 @@ class streamingWeatherNode extends streamingNode {
         // call super constructor
         super(base, connectionConfig, config,  aggrConfigs, processRecordCb, fusionNodeI, parent);
 
+        // read config options
+        this.datasize = config["datasize"] === undefined ? 48 : config["datasize"];
+
         // adding store
         // generating fields
         this.fields = [];
         this.fieldTypes = [ "temperature", "humidity", "pressure", "windSpeed", "windBearing", "cloudCover" ];
-        for (let i = 0; i < 48; i++) {
+        for (let i = 0; i < this.datasize; i++) {
             for (let j in this.fieldTypes) {
                 let fieldName = this.fieldTypes[j] + i;
                 this.fields.push({ name: fieldName, type: "float" });
@@ -55,13 +58,13 @@ class streamingWeatherNode extends streamingNode {
         // extract record from rec (according to the store construction)
         let record = {};
 
-        if (("hourly" in rec) && ("data" in rec.hourly) && (rec.hourly.data.length >= 48)) {
+        if (("hourly" in rec) && ("data" in rec.hourly) && (rec.hourly.data.length >= this.datasize)) {
             // setting stampm manually since we do not have getAggregates function
             record["stampm"] = rec.currently.time * 1000;
 
             // populate other record properties
             // this.fieldTypes is already set from constructor
-            for (let i = 0; i < 48; i++) {
+            for (let i = 0; i < this.datasize; i++) {
                 for (let j in this.fieldTypes) {
                     let fieldName = this.fieldTypes[j] + i;
                     record[fieldName] = rec.hourly.data[i][this.fieldTypes[j]];

@@ -121,6 +121,7 @@ let fusionConfig = {
             "aggrConfigId": "weather",
             "fusionTick": 60 * 60 * 1000, // 1 hour
             "master": false,
+            "datasize": 48,     // default value is 48 hours in advance
             "attributes": [
                 { "time": 0, "attributes": [
                     { type: "value", name: "temperature24" },
@@ -134,6 +135,8 @@ let fusionConfig = {
         }
     ]
 }
+
+const testNodeConfig = JSON.parse(JSON.stringify(fusionConfig["nodes"][2]));
 
 function processRecordDummyCb(nodeI, parent) {
     return true;
@@ -150,7 +153,22 @@ describe('streamingWeatherNode', function() {
         base = new qm.Base({ dbPath: './db2/', mode: 'createClean' });
         // sn = new streamingNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, null, 99, null);
         // sen = new streamingEnergyNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
+
+        // create default 48h ahead weather prediction node
         swn = new streamingWeatherNode(base, connectionConfig, fusionConfig["nodes"][2], aggrConfigs, processRecordDummyCb, 99, null);
+
+        // create 24h ahead weather prediction node
+        fusionConfig["nodes"]["2"]["datasize"] = 24;
+        fusionConfig["nodes"]["2"]["nodeid"] = "W2";
+        swn24 = new streamingWeatherNode(base, connectionConfig, fusionConfig["nodes"][2], aggrConfigs, processRecordDummyCb, 99, null);
+
+        // create 3d ahead weather prediction node
+        fusionConfig["nodes"]["2"]["datasize"] = 3;
+        fusionConfig["nodes"]["2"]["nodeid"] = "W3";
+        swn3 = new streamingWeatherNode(base, connectionConfig, fusionConfig["nodes"][2], aggrConfigs, processRecordDummyCb, 99, null);
+
+
+
         // ssn = new streamingStaticNode(base, connectionConfig, fusionConfig["nodes"][1], aggrConfigs, null, 99, null);
     });
 
@@ -180,7 +198,7 @@ describe('streamingWeatherNode', function() {
         })
 
         it('config saved', function() {
-            assert.deepEqual(swn.config, fusionConfig["nodes"][2]);
+            assert.deepEqual(swn.config, testNodeConfig);
         })
 
         it('fusionNodeI correctly saved', function() {
@@ -324,4 +342,11 @@ describe('streamingWeatherNode', function() {
             swn.processRecord(json);
         });
     });
+
+    describe('24h node test', function() {
+        it('number of data records', function() {
+            assert.equal(swn24.datasize, 24);
+        })
+    });
+
 });
