@@ -20,6 +20,7 @@ class streamingWeatherNode extends streamingNode {
 
         // read config options
         this.datasize = config["datasize"] === undefined ? 48 : config["datasize"];
+        this.datatype = config["datatype"] === undefined ? "hourly" : config["datatype"];
 
         // adding store
         // generating fields
@@ -60,7 +61,7 @@ class streamingWeatherNode extends streamingNode {
         // extract record from rec (according to the store construction)
         let record = {};
 
-        if (("hourly" in rec) && ("data" in rec.hourly) && (rec.hourly.data.length >= this.datasize)) {
+        if ((this.datatype in rec) && ("data" in rec[this.datatype]) && (rec[this.datatype].data.length >= this.datasize)) {
             // setting stampm manually since we do not have getAggregates function
             record["stampm"] = rec.currently.time * 1000;
 
@@ -69,7 +70,7 @@ class streamingWeatherNode extends streamingNode {
             for (let i = 0; i < this.datasize; i++) {
                 for (let j in this.fieldTypes) {
                     let fieldName = this.fieldTypes[j] + i;
-                    record[fieldName] = rec.hourly.data[i][this.fieldTypes[j]];
+                    record[fieldName] = rec[this.datatype].data[i][this.fieldTypes[j]];
                     // convert potential null value to 0
                     if (record[fieldName] == null) rec[fieldName] = 0;
                 }
@@ -83,7 +84,7 @@ class streamingWeatherNode extends streamingNode {
             // call streamFusion hook for this sensor
             this.processRecordCb(this.fusionNodeI, this.parent);
         } else {
-            console.log("NO WEATHER/WEATHER RECORD TOO SHORT (48 hourly records needed)!");
+            console.log("NO WEATHER/WEATHER RECORD TOO SHORT (" + this.datasize + " "  + this.datatype + " records needed)!");
         }
     }
 }
