@@ -20,7 +20,13 @@ class SimulatorNode {
             currentDate.setMinutes(0);
             currentDate.setSeconds(0);
             currentDate.setMilliseconds(0);
-        }
+        } else if (this.config.normalizeStartTime == "day") {
+            // get the full day near the current timestamp
+            currentDate.setHours(0);
+            currentDate.setMinutes(0);
+            currentDate.setSeconds(0);
+            currentDate.setMilliseconds(0);
+        };
 
         this.startts = currentDate.getTime();
     }
