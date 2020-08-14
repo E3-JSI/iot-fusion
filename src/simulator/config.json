@@ -1,5 +1,6 @@
 {
     "timeFactor": 3600,
+    "normalizeStartTime": "hour",
     "log": "none",
     "connection": {
         "type": "kafka",
