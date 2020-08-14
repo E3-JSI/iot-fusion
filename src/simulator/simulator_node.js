@@ -11,7 +11,18 @@ class SimulatorNode {
      * @param {long} startts Zero time.
      */
     init(startts) {
-        this.startts = startts;
+        // normalize time
+        let currentDate = new Date(startts);
+
+        // should we normalize start time
+        if (this.config.normalizeStartTime == "hour") {
+            // get the full hour near the current timestamp
+            currentDate.setMinutes(0);
+            currentDate.setSeconds(0);
+            currentDate.setMilliseconds(0);
+        }
+
+        this.startts = currentDate.getTime();
     }
 
     /**

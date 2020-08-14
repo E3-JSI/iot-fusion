@@ -38,18 +38,8 @@ class Simulator {
         let currentDate = new Date();
         this.realstartts = currentDate.getTime();
 
-        // should we normalize start time
-        if (this.config.normalizeStartTime == "hour") {
-            // get the full hour near the current timestamp
-            currentDate.setMinutes(0);
-            currentDate.setSeconds(0);
-            currentDate.setMilliseconds(0);
-        }
-
-        this.startts = currentDate.getTime();
-
         for (let node of this.nodes) {
-            node.init(this.startts);
+            node.init(this.realstartts);
         };
 
         this.loop = setInterval(

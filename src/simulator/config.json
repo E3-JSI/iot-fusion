@@ -1,6 +1,5 @@
 {
     "timeFactor": 3600,
-    "normalizeStartTime": "hour",
     "log": "none",
     "connection": {
         "type": "kafka",
@@ -10,6 +9,7 @@
         {
             "nodeid": "Smart Lamp",
             "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
             "frequency": 3600000,
             "fields": [
                 { "name": "dimml", "type": "random" },
