@@ -1,0 +1,21 @@
+{
+    "timeFactor": 3600,
+    "log": "none",
+    "connection": {
+        "type": "kafka",
+        "kafka": "localhost:9092"
+    },
+    "nodes": [
+        {
+            "nodeid": "Smart Lamp",
+            "timeFormat": "unixms",
+            "frequency": 3600000,
+            "fields": [
+                { "name": "dimml", "type": "random" },
+                { "name": "pact", "type": "random" }
+            ],
+            "format": "{ time: %time%, dimml: %dimml%, pact: %pact% }"
+        }
+    ]
+
+}

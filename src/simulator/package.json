@@ -1,0 +1,12 @@
+{
+  "name": "simulator-iot-fusion",
+  "version": "1.0.0",
+  "description": "Simulator of data for IoT fusion.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm test"
+  },
+  "author": "Klemen Kenda",
+  "license": "ISC"
+}
