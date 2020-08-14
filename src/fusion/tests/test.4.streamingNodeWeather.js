@@ -387,6 +387,15 @@ describe('streamingWeatherNode', function() {
 
             }
         });
+
+        it('real data from topic', function() {
+            let raw = '{ "currently":{ "time":1597320927  }, "daily" :{ "data" :[{"time": 1597269600,"temperature": 29.09,"humidity": 0.82,"windSpeed": 2.1,"windBearing": 196.0,"cloudCover": 0.52,"pressure": 1016.8,"daylight": 0},{"time": 1597356000,"temperature": 27.81,"humidity": 0.82,"windSpeed": 2.16,"windBearing": 10.0,"cloudCover": 0.56,"pressure": 1014.7,"daylight": 0},{"time": 1597442400,"temperature": 27.49,"humidity": 0.81,"windSpeed": 2.13,"windBearing": 33.0,"cloudCover": 0.93,"pressure": 1014.4,"daylight": 1},{"time": 1597528800,"temperature": 27.61,"humidity": 0.83,"windSpeed": 2.13,"windBearing": 98.0,"cloudCover": 0.27,"pressure": 1014.1,"daylight": 0}]}}';
+
+            let json = JSON.parse(raw);
+            swn3.processRecord(json);
+
+            assert.equal(swn3.buffer[1]["daylight2"], 1);
+        })
     });
 
 });
