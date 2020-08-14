@@ -15,7 +15,14 @@ class SimulatorNode {
         let currentDate = new Date(startts);
 
         // should we normalize start time
-        if (this.config.normalizeStartTime == "hour") {
+        if (this.config.normalizeStartTime == "second") {
+            // get the full second near the current time
+            currentDate.setMilliseconds(0);
+        } else if (this.config.normalizeStartTime == "minute") {
+            // get the full minute near the current timestamp
+            currentDate.setSeconds(0);
+            currentDate.setMilliseconds(0);
+        } else if (this.config.normalizeStartTime == "hour") {
             // get the full hour near the current timestamp
             currentDate.setMinutes(0);
             currentDate.setSeconds(0);
