@@ -4,6 +4,12 @@ class SimulatorNode {
         this.config = config;
         this.startts = 0;
         this.lastts = 0;
+
+        this.holidays = [
+            '2020-08-15', '2020-10-31', '2020-11-01', '2020-12-25', '2020-12-26',
+            '2021-01-01', '2021-01-02', '2021-02-08', '2021-04-05', '2021-04-27', '2021-05-01', '2021-05-02', '2021-06-25', '2021-08-15', '2021-10-31', '2021-11-01', '2021-12-25', '2021-12-26',
+            '2022-01-01', '2022-01-02', '2022-02-08', '2022-04-18', '2022-04-27', '2022-05-01', '2022-05-02', '2022-06-25', '2022-08-15', '2022-10-31', '2022-11-01', '2022-12-25', '2022-12-26'
+        ];
     }
 
     /**
@@ -38,6 +44,44 @@ class SimulatorNode {
         this.startts = currentDate.getTime();
     }
 
+    generateField(field, ts) {
+        let val;
+
+        if (field.type == "random") {
+            val = Math.random();
+        } else if (field.type == "hourOfDay") {
+            val = new Date(ts).getHours();
+        } else if (field.type == "dayOfWeek") {
+            val = new Date(ts).getDay();
+        } else if (field.type == "dayAfterHoliday") {
+            val = 0;
+            let date = new Date(ts - 24 * 3600 * 1000).toJSON().slice(0, 10);
+            if (date in this.holidays) val = 1;
+        } else if (field.type == "dayBeforeHoliday") {
+            val = 0;
+            let date = new Date(ts + 24 * 3600 * 1000).toJSON().slice(0, 10);
+            if (date in this.holidays) val = 1;
+        } else if (field.type == "dayOfYear") {
+            let date = new Date(ts);
+            let first = new Date(date.getFullYear(), 0, 1);
+            val = Math.round(((date - first) / 1000 / 60 / 60 / 24) + .5, 0);
+        } else if (field.type == "dayOfMonth") {
+            val = new Date(ts).getDate();
+        } else if (field.type == "holiday") {
+            val = 0;
+            let date = new Date(ts).toJSON().slice(0, 10);
+            if (date in this.holidays) val = 1;
+        } else if (field.type == "monthOfYear") {
+            val = new Date(ts).getMonth() + 1;
+        } else if (field.type == "weekEnd") {
+            val = 0;
+            let day = new Date(ts).getDay();
+            if (day >= 5) val = 1;
+        }
+
+        return val;
+    }
+
     /**
      * Generate the record.
      * @param {long} ts Timestamp in milliseconds.
@@ -63,11 +107,7 @@ class SimulatorNode {
         // generate fields
         let fields = {};
         for (let field of this.config.fields) {
-            if (field.type == "random") {
-                fields[field.name] = Math.random();
-            } elseif (field.type == "hourOfDay") {
-                fields[field.name] = new Date(ts).getHours();
-            }
+            fields[field.name] = this.generateField(field, ts);
         }
 
         if (this.config.parts !== undefined) {
@@ -88,7 +128,15 @@ class SimulatorNode {
     generateParts(ts) {
         let msg = "";
         for (let i = 0; i < this.config.parts; i++) {
-            msg += this.config.formatPart;
+            let fMsg = this.config.formatPart;
+
+            for (let field of this.config.fields) {
+               fMsg = fMsg.replace("%" + field.name + "%", this.generateField(field, ts));
+            }
+
+            if (msg !== "") msg += ",";
+            msg += fMsg;
+
         }
 
         return msg;
