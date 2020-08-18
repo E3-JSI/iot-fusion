@@ -33,7 +33,7 @@ class IncrementalLearning {
         // create empty buffer
         this.buffer = [];
         // set model filename
-        this.filename = './models/' + fusion.fusion_id + "-lr.bin";
+        this.filename = './models/' + fusion.fusion_id + "-" + this.options.method + ".bin";
     }
 
     /**
