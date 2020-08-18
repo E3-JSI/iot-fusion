@@ -16,7 +16,7 @@ const streamingTrafficCounterNode = require('./nodes/streamingTrafficCounterNode
 const streamingAirQualityNode = require('./nodes/streamingAirQualityNode.js');
 const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
-const streamModel = require ('./streamModel.js');
+const streamModel = require ('./models/IncrementalLearning.js');
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 
 class streamFusion {
@@ -178,7 +178,7 @@ class streamFusion {
                     let prediction;
                     if (featureVector.length != 0) {
                         prediction = self.streamModel.updateStream(featureVector, zeroTimestamp);
-                        self.broadcastPrediction(prediction[0], prediction[1], prediction[2]);
+                        self.broadcastPrediction(prediction.ts, prediction.value, prediction.horizon);
                     }
                 } else {
                     // if there is no model included, than feature vector is broadcasted
