@@ -7,7 +7,7 @@
     },
     "nodes": [
         {
-            "nodeid": "Smart Lamp",
+            "nodeid": "SL1",
             "timeFormat": "unixms",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
@@ -16,6 +16,36 @@
                 { "name": "pact", "type": "random" }
             ],
             "format": "{ time: %time%, dimml: %dimml%, pact: %pact% }"
+        },
+        {
+            "nodeid": "W1",
+            "timeFormat": "unixs",
+            "normalizeStartTime": "hour",
+            "frequency": 3600000,
+            "fields": [
+                { "name": "temperature", "type": "random" },
+                { "name": "humidity", "type": "random" },
+                { "name": "windSpeed", "type": "random" },
+                { "name": "windBearing", "type": "random" },
+                { "name": "cloudCover", "type": "random" },
+                { "name": "pressure", "type": "random" },
+                { "name": "daylight", "type": "random" }
+            ],
+            "parts": 24,
+            "format": "{ currently: { time: %time% }, hourly: { data: [%parts%] }}",
+            "formatPart": "{time: %time%, temperature: %temperature%, humidity: %humidity%, windSpeed: %windSpeed%, windBearing: %windBearing%, cloudCover: %cloudCover%, pressure: %pressure%, daylight: %daylight%}"
+        },
+        {
+            "nodeid": "S1",
+            "nodeType": "staticData",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 3600000,
+            "horizon": 72,
+            "fields": [
+                { "name": "hourOfDay", "type": "hourOfDay" }
+            ],
+            "format": "{ timestamp: %time%, timeOfDay: %hourOfDay%, dayAfterHoliday: 0, dayBeforeHoliday: 1, dayOfYear: 1, dayOfWeek: 2, dayOfMonth: 1, holiday: 1, monthOfYear: 1, weekEnd: 0 }"
         }
     ]
 

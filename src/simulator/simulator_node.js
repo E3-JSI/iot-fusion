@@ -63,8 +63,25 @@ class SimulatorNode {
             }
         }
 
+        if (this.config.parts !== undefined) {
+            fields["parts"] = this.generateParts(ts);
+        }
+
         for (let field of this.config.fields) {
             msg = msg.replace("%" + field.name + "%", fields[field.name]);
+        }
+
+        return msg;
+    }
+
+    /**
+     * Generate parts of the record for weatherforecast.
+     * @param {long} ts Timestamp in milliseconds.
+     */
+    generateParts(ts) {
+        let msg = "";
+        for (let i = 0; i < this.config.parts; i++) {
+            msg += this.config.formatPart;
         }
 
         return msg;
