@@ -57,5 +57,4 @@
             "format": "{ timestamp: %time%, timeOfDay: %hourOfDay%, dayAfterHoliday: %dayAfterHoliday%, dayBeforeHoliday: %dayBeforeHoliday%, dayOfYear: %dayOfYear%, dayOfWeek: %dayOfWeek%, dayOfMonth: %dayOfMonth%, holiday: %holiday%, monthOfYear: %monthOfYear%, weekEnd: %weekEnd% }"
         }
     ]
-
 }
