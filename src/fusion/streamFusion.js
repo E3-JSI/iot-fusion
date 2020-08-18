@@ -16,7 +16,7 @@ const streamingTrafficCounterNode = require('./nodes/streamingTrafficCounterNode
 const streamingAirQualityNode = require('./nodes/streamingAirQualityNode.js');
 const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
-const streamModel = require ('./models/IncrementalLearning.js');
+const IncrementalLearning = require ('./models/IncrementalLearning.js');
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 
 class streamFusion {
@@ -102,7 +102,7 @@ class streamFusion {
 
         // create streaming model if needed
         if ("model" in config) {
-            this.streamModel = new streamModel(config, self);
+            this.streamModel = new IncrementalLearning(config, self);
             // if model is included, than predictions will be sent
             this.topic = "predictions_" + this.fusion_id;
         }
