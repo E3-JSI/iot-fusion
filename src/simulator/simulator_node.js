@@ -47,6 +47,11 @@ class SimulatorNode {
         let msg = this.config.format;
         let tts = 0;
 
+        // are we using prediction horizon?
+        if (this.config.horizon !== undefined) {
+            ts += this.config.horizon * this.config.frequency;
+        }
+
         // generate time
         if (this.config.timeFormat === "unixms") {
             tts = ts;
@@ -60,6 +65,8 @@ class SimulatorNode {
         for (let field of this.config.fields) {
             if (field.type == "random") {
                 fields[field.name] = Math.random();
+            } elseif (field.type == "hourOfDay") {
+                fields[field.name] = new Date(ts).getHours();
             }
         }
 
