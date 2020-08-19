@@ -7,7 +7,7 @@
     },
     "nodes": [
         {
-            "nodeid": "SL1",
+            "nodeid": "ST0005-0001",
             "timeFormat": "unixms",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
@@ -18,7 +18,7 @@
             "format": "{ time: %time%, dimml: %dimml%, pact: %pact% }"
         },
         {
-            "nodeid": "W1",
+            "nodeid": "W24h",
             "timeFormat": "unixs",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
