@@ -87,7 +87,9 @@ class IncrementalLearning {
 
             // TODO: remove this after testing
             fs.appendFileSync('predictions.csv', this.predictionBuffer[0] + "," + featureVec[this.label] + '\n');
-            console.log("Prediction: ", prediction.toFixed(2));
+            if (prediction !== null) {
+                console.log("Prediction: ", prediction.toFixed(2));
+            }
 
             // controlling buffer length
             if (this.buffer.length > this.horizon) this.buffer.shift();
