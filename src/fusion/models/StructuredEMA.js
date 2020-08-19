@@ -30,7 +30,6 @@ class StructuredEMAIncrementalModel extends AbstractIncrementalModel{
      * @param {float} label True value for regression.
      */
     partialFit(featureVec, label) {
-        // console.log(featureVec, label);
         const structuralFactor = featureVec[this.options.structuralFactorPosition];
 
         if (this.EMA[structuralFactor] === undefined) {

@@ -84,6 +84,7 @@ class IncrementalLearning {
 
             let qmFeatureVec = new la.Vector(featureVec);
             let prediction = this.model.predict(qmFeatureVec);
+
             // push prediction to prediction buffer
             this.predictionBuffer.push(prediction);
             if (this.predictionBuffer.length > this.horizon) this.predictionBuffer.shift();
