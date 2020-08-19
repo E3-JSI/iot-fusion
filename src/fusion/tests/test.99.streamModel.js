@@ -190,7 +190,7 @@ describe('incremental model', function() {
 
             i = 73;
             // prediction for 3 hour prediction horizon should be around 85 as we have a linear function with k = 1
-            assert.deepEqual(ilSEMA.updateStream([42 + i, i % 24], i * 3600000), { ts: 154800000, value: 85.0736902918679, horizon: 3 });
+            assert.deepEqual(ilSEMA.updateStream([42 + i, i % 24], i * 3600000), { ts: 273600000, value: 67.33333333333334, horizon: 3 });
         });
     });
 

@@ -45,7 +45,6 @@ class StructuredEMAIncrementalModel extends AbstractIncrementalModel{
      * @param {array} featureVec Array of values in feature vector.
      */
     predict(featureVec) {
-        // console.log(this.EMA);
         const structuralFactor = featureVec[this.options.structuralFactorPosition];
         if (this.EMA[structuralFactor] === undefined) return null;
         return this.EMA[structuralFactor];
