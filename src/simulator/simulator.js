@@ -8,7 +8,7 @@ class Simulator {
 
         // init nodes
         for (let nodeConfig of config.nodes) {
-            this.nodes.push(new SimulatorNode(nodeConfig));
+            this.nodes.push(new SimulatorNode(nodeConfig, config.connection));
         }
         this.start();
     }

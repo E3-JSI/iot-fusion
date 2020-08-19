@@ -1,6 +1,8 @@
+const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
+
 class SimulatorNode {
 
-    constructor(config, startts) {
+    constructor(config, connectionConfig) {
         this.config = config;
         this.startts = 0;
         this.lastts = 0;
@@ -10,6 +12,12 @@ class SimulatorNode {
             '2021-01-01', '2021-01-02', '2021-02-08', '2021-04-05', '2021-04-27', '2021-05-01', '2021-05-02', '2021-06-25', '2021-08-15', '2021-10-31', '2021-11-01', '2021-12-25', '2021-12-26',
             '2022-01-01', '2022-01-02', '2022-02-08', '2022-04-18', '2022-04-27', '2022-05-01', '2022-05-02', '2022-06-25', '2022-08-15', '2022-10-31', '2022-11-01', '2022-12-25', '2022-12-26'
         ];
+
+        // initialize Kafka
+        this.kafkaClientId = Math.random();
+        this.topic = "measurements_node_" + config.nodeid;
+        this.kafka = new KafkaNodeBroker(connectionConfig, this.topic, this.kafkaClientId);
+        this.kafka.addPublisher();
     }
 
     /**
@@ -148,7 +156,8 @@ class SimulatorNode {
     send() {
         this.lastts += this.config.frequency;
         const record = this.generate(this.lastts + this.startts);
-        console.log("Sending record: " + record);
+        console.log("Sending record: " + this.topic);
+        this.kafka.publish(JSON.stringify(record));
     }
 
     /**

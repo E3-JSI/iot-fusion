@@ -246,7 +246,7 @@ class streamFusion {
      * Broadcasts predictions via appropriate broke.
      */
     broadcastPrediction(timestamp, value, horizon) {
-        let featureMessage = { timestamp: timestamp, value: value, horizon: horizon };
+        let featureMessage = JSON.stringify({ timestamp: timestamp, value: value, horizon: horizon });
         this.broker.publish(featureMessage);
     }
 

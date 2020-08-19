@@ -22,6 +22,7 @@ class streamingSmartLampNode extends streamingNode {
         this.parent = parent;
         // remember nodeid name
         this.nodeId = config.nodeid;
+        this.storeName = this.nodeId.replace("-", "_");
 
         // creating empty buffer of partial feature vectors
         this.buffer = [];
@@ -30,14 +31,14 @@ class streamingSmartLampNode extends streamingNode {
 
         // adding store
         this.base.createStore({
-            name: this.nodeId,
+            name: this.storeName,
             fields: [
                 { name: "Time", type: "datetime" },
                 { name: "pact", type: "float" },
                 { name: "dimml", type: "float" }
             ]
         });
-        this.rawstore = this.base.store(this.nodeId);
+        this.rawstore = this.base.store(this.storeName);
 
         // initialize last timestamp
         this.lastTimestamp = 0;
@@ -57,6 +58,10 @@ class streamingSmartLampNode extends streamingNode {
         // extract record from rec (according to the store construction)
         let record = {};
 
+        if (typeof rec == "string") {
+            rec = JSON.parse(rec);
+        }
+
         // TODO: what if we used last-value interpolation instead of zero in the
         //       null?
         let unixts = rec["stampm"];
@@ -69,7 +74,7 @@ class streamingSmartLampNode extends streamingNode {
         }
 
         if (isNaN(unixts)) {
-            console.log("Timestamp is NaN!");
+            console.log(this.nodeId, "Timestamp is NaN!");
             return;
         }
 

@@ -76,9 +76,12 @@ class IncrementalLearning {
                 } else if (this.options.method === "StructuredEMA") {
                     // EMA structured by first feature
                     this.model = new StructuredEMAIncrementalModel(this.options);
-                } else {
+                } else if (this.options.method === "EMA") {
                     // Exponential moving average
                     this.model = new EMAIncrementalModel(this.options);
+                } else {
+                    // error
+                    throw Error("No correct model selected", this.options.method);
                 }
             }
 

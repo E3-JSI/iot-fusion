@@ -7,7 +7,7 @@
     },
     "nodes": [
         {
-            "nodeid": "SL1",
+            "nodeid": "ST0005-0001",
             "timeFormat": "unixms",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
@@ -15,10 +15,10 @@
                 { "name": "dimml", "type": "random" },
                 { "name": "pact", "type": "random" }
             ],
-            "format": "{ time: %time%, dimml: %dimml%, pact: %pact% }"
+            "format": "{ \"stampm\": %time%, \"dimml\": %dimml%, \"pact\": %pact% }"
         },
         {
-            "nodeid": "W1",
+            "nodeid": "W24h",
             "timeFormat": "unixs",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
@@ -34,7 +34,7 @@
             ],
             "parts": 24,
             "format": "{ currently: { time: %time% }, hourly: { data: [%parts%] }}",
-            "formatPart": "{time: %time%, temperature: %temperature%, humidity: %humidity%, windSpeed: %windSpeed%, windBearing: %windBearing%, cloudCover: %cloudCover%, pressure: %pressure%, daylight: %daylight%}"
+            "formatPart": "{ \"time\": %time%, \"temperature\": %temperature%, \"humidity\": %humidity%, \"windSpeed\": %windSpeed%, \"windBearing\": %windBearing%, \"cloudCover\": %cloudCover%, \"pressure\": %pressure%, \"daylight\": %daylight%}"
         },
         {
             "nodeid": "S1",
@@ -42,7 +42,7 @@
             "timeFormat": "unixms",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
-            "horizon": 72,
+            "horizon": 4,
             "fields": [
                 { "name": "hourOfDay", "type": "hourOfDay" },
                 { "name": "holiday", "type": "holiday" },
@@ -54,7 +54,7 @@
                 { "name": "monthOfYear", "type": "monthOfYear" },
                 { "name": "weekEnd", "type": "weekEnd" }
             ],
-            "format": "{ timestamp: %time%, timeOfDay: %hourOfDay%, dayAfterHoliday: %dayAfterHoliday%, dayBeforeHoliday: %dayBeforeHoliday%, dayOfYear: %dayOfYear%, dayOfWeek: %dayOfWeek%, dayOfMonth: %dayOfMonth%, holiday: %holiday%, monthOfYear: %monthOfYear%, weekEnd: %weekEnd% }"
+            "format": "{ \"timestamp\": %time%, \"timeOfDay\": %hourOfDay%, \"dayAfterHoliday\": %dayAfterHoliday%, \"dayBeforeHoliday\": %dayBeforeHoliday%, \"dayOfYear\": %dayOfYear%, \"dayOfWeek\": %dayOfWeek%, \"dayOfMonth\": %dayOfMonth%, \"holiday\": %holiday%, \"monthOfYear\": %monthOfYear%, \"weekEnd\": %weekEnd% }"
         }
     ]
 }
