@@ -12,9 +12,9 @@ var assert = require('assert');
 
 // model config EMA
 const modelConfigEMA = {
-    horizon: 3,
     fusionTick: 3600000,
     model: {
+        horizon: 3,
         label: 0,
         options: {
             method: 'EMA'
@@ -74,7 +74,16 @@ describe('incremental model', function() {
         });
 
         it('update incremental model - first time', function() {
-            assert.equal(ilEMA.updateStream([], 42), 42);
+            assert.deepEqual(ilEMA.updateStream([0, 42], 0), { ts: 10800000, value: null, horizon: 3 });
+            ilEMA.updateStream([42, 1], 1 * 3600000);
+            ilEMA.updateStream([42, 2], 2 * 3600000);
+            ilEMA.updateStream([42, 3], 3 * 3600000);
+            ilEMA.updateStream([42, 4], 4 * 3600000);
+            assert.deepEqual(ilEMA.updateStream([42, 5], 5 * 3600000), { ts: 28800000, value: 42, horizon: 3 });
+        });
+
+        it ('update incremental mode - with value 40', function() {
+            assert.deepEqual(ilEMA.updateStream([40, 6], 6 * 3600000),  { ts: 32400000, value: 41.333333333333336, horizon: 3 });
         });
 
     });
