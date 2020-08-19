@@ -10,7 +10,8 @@ const la = require('qminer').la;
 const fs = require('fs');
 
 // additional incremental models
-const IncrementalModelEMA = require('./EMA');
+const EMAIncrementalModel = require('./EMA');
+const StructuredEMAIncrementalModel = require('./StructuredEMA');
 
 
 class IncrementalLearning {
@@ -72,21 +73,29 @@ class IncrementalLearning {
                 // initialize method (only lin. reg. supported by now)
                 if (this.options.method === "RecLinReg") {
                     this.model = new qm.analytics.RecLinReg(this.options);
+                } else if (this.options.method === "StructuredEMA") {
+                    // EMA structured by first feature
+                    this.model = new StructuredEMAIncrementalModel(this.options);
                 } else {
-                    // moving average EMA
-                    this.model = new IncrementalModelEMA(this.options);
+                    // Exponential moving average
+                    this.model = new EMAIncrementalModel(this.options);
                 }
             }
 
             let qmFeatureVec = new la.Vector(featureVec);
-            let prediction = this.model.predict(featureVec);
+            let prediction = this.model.predict(qmFeatureVec);
+
             // push prediction to prediction buffer
             this.predictionBuffer.push(prediction);
             if (this.predictionBuffer.length > this.horizon) this.predictionBuffer.shift();
 
             // TODO: remove this after testing
+            /*
             fs.appendFileSync('predictions.csv', this.predictionBuffer[0] + "," + featureVec[this.label] + '\n');
-            console.log("Prediction: ", prediction.toFixed(2));
+            if (prediction !== null) {
+                console.log("Prediction: ", prediction.toFixed(2));
+            }
+            */
 
             // controlling buffer length
             if (this.buffer.length > this.horizon) this.buffer.shift();

@@ -1,7 +1,7 @@
 /**
- * AbstractIncrementalModel
- * Main abstract class for incremental models, connected to stream fusion. The component
- * expects uniformly resampled stream.
+ * StructuredEMAIncrementalModel
+ * EMA that is caluclated separate for each value of the first feature in the dataset.
+ * This is useful, if we want a separate EMA model for each hour of the day, for example.
  */
 
 // includes
@@ -10,7 +10,7 @@ const la = require('qminer').la;
 const fs = require('fs');
 const AbstractIncrementalModel = require('./abstractIncrementalModel');
 
-class EMAIncrementalModel extends AbstractIncrementalModel{
+class StructuredEMAIncrementalModel extends AbstractIncrementalModel{
     /**
      * constructor
      * @param {json} config
@@ -21,7 +21,7 @@ class EMAIncrementalModel extends AbstractIncrementalModel{
         this.value = 0;
         let optionN = options.N !== undefined ? options.N : 5;
         this.k = 2 / (optionN + 1);
-        this.EMA = null;
+        this.EMA = {};
     }
 
     /**
@@ -30,10 +30,12 @@ class EMAIncrementalModel extends AbstractIncrementalModel{
      * @param {float} label True value for regression.
      */
     partialFit(featureVec, label) {
-        if (this.EMA === null) {
-            this.EMA = label
+        const structuralFactor = featureVec[this.options.structuralFactorPosition];
+
+        if (this.EMA[structuralFactor] === undefined) {
+            this.EMA[structuralFactor] = label
         } else {
-            this.EMA = label * this.k + (1 - this.k) * this.EMA;
+            this.EMA[structuralFactor] = label * this.k + (1 - this.k) * this.EMA[structuralFactor];
         }
     }
 
@@ -42,7 +44,9 @@ class EMAIncrementalModel extends AbstractIncrementalModel{
      * @param {array} featureVec Array of values in feature vector.
      */
     predict(featureVec) {
-        return this.EMA;
+        const structuralFactor = featureVec[this.options.structuralFactorPosition];
+        if (this.EMA[structuralFactor] === undefined) return null;
+        return this.EMA[structuralFactor];
     }
 
     /**
@@ -63,4 +67,4 @@ class EMAIncrementalModel extends AbstractIncrementalModel{
 }
 
 // expose class to the outside world
-module.exports = EMAIncrementalModel;
+module.exports = StructuredEMAIncrementalModel;

@@ -14,8 +14,8 @@ class AbstractIncrementalModel {
      * constructor
      * @param {json} config
      */
-    constructor(config, fusion) {
-        this.options = config.model.options;
+    constructor(options, fusion) {
+        this.options = options;
     }
 
     /**

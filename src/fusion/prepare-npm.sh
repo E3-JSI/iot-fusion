@@ -9,6 +9,7 @@ cp package.json ./dist
 cp conf ./dist -r
 cp nodes ./dist -r
 cp tests ./dist -r
+cp models ./dist -r
 mkdir ./dist/common
 cp ../common/utils ./dist/common/utils -r
 cp ../common/brokers ./dist/common/brokers -r
@@ -19,8 +20,12 @@ echo Holder > ./dist/data/holder.txt
 cd dist
 rm index.js
 javascript-obfuscator streamFusion.js --output streamFusion.js --self-defending true --compact true
-javascript-obfuscator streamModel.js --output streamModel.js --self-defending true --compact true
 javascript-obfuscator streamMaster.js --output streamMaster.js --self-defending true --compact true
+
+javascript-obfuscator models/IncrementalLearning.js --output models/IncrementalLearning.js --self-defending true --compact true
+javascript-obfuscator models/EMA.js --output models/EMA.js --self-defending true --compact true
+javascript-obfuscator models/StructuredEMA.js --output models/StructuredEMA.js --self-defending true --compact true
+javascript-obfuscator models/abstractIncrementalModel.js --output models/abstractIncrementalModel.js --self-defending true --compact true
 
 javascript-obfuscator nodes/streamingNode.js --output nodes/streamingNode.js --self-defending true --compact true
 javascript-obfuscator nodes/streamingAirQualityNode.js --output nodes/streamingAirQualityNode.js --self-defending true --compact true
@@ -55,6 +60,7 @@ javascript-obfuscator tests/test.9.streamingNodeTrafficCounter.js --output tests
 javascript-obfuscator tests/test.10.streamingNodeAirQuality.js --output tests/test.6.streamingNodeAirQuality.js --self-defending true --compact true
 javascript-obfuscator tests/test.90.streamFusion.js --output tests/test.90.streamFusion.js --self-defending true --compact true
 javascript-obfuscator tests/test.91.streamFusionFactory.js --output tests/test.91.streamFusionFactory.js --self-defending true --compact true
+javascript-obfuscator tests/test.99.streamModel.js --output tests/test.99.streamModel.js --self-defending true --compact true
 
 # find replace pointers to common
 sed -i 's/..\/common/.\/common/g' streamFusion.js
