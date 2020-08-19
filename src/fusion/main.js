@@ -10,6 +10,6 @@ let configs = {
 
 module.exports = {
     streamFusion: require('./streamFusion.js'),
-    streamModel: require('./streamModel.js'),
+    incrementalLearning: require('./models/IncrementalLearning.js'),
     configs: configs
 }
