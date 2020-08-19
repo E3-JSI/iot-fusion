@@ -51,6 +51,10 @@ class streamingStaticNode extends streamingNode {
         // TODO: should we make separate data adapters and process already structured
         // TODO: data here?
 
+        if (typeof rec == "string") {
+            rec = JSON.parse(rec);
+        }
+
         // virtually add to raw store
         // get ISO time
         let isoTime = rec["timestamp"];
