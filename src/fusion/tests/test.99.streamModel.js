@@ -1,6 +1,7 @@
 // models
-const IncrementalLearning = require('../models/IncrementalLearning.js');
-const EMAIncrementalModel = require('../models/EMA.js');
+const IncrementalLearning = require('../models/IncrementalLearning');
+const EMAIncrementalModel = require('../models/EMA');
+const StructuredEMAIncrementalModel = require('../models/StructuredEMA');
 
 // helper includes
 const fileManager = require('../../common/utils/fileManager.js');
@@ -34,6 +35,19 @@ const modelConfigRecLinReg = {
     }
 }
 
+// model config EMA
+const modelConfigSEMA = {
+    fusionTick: 3600000,
+    model: {
+        horizon: 3,
+        label: 0,
+        options: {
+            structuralFactorPosition: 0, // inside the feature vector, which has label already removed
+            method: 'StructuredEMA'
+        }
+    }
+}
+
 // fake fusion object
 const fakeFusion = {
     fusion_id: "fakeFusion"
@@ -49,6 +63,7 @@ describe('incremental model', function() {
 
         // incremental models
         imEMA = new EMAIncrementalModel(modelConfigEMA.model.options, fakeFusion);
+        imSEMA = new StructuredEMAIncrementalModel(modelConfigSEMA.model.options, fakeFusion);
     });
 
     after(function() {
@@ -119,4 +134,64 @@ describe('incremental model', function() {
         });
 
     });
+
+    /*
+    describe('incremental learning component - StructuredEMA', function() {
+        it('ilSEMA instantiated', function() {
+            assert.equal(typeof ilSEMA, "object");
+        });
+
+        it('update incremental model - first time', function() {
+            assert.deepEqual(ilSEMA.updateStream([42, 0], 0), { ts: 10800000, value: 0, horizon: 3 });
+
+            for (let i = 1; i < 40; i++) {
+                ilSEMA.updateStream([42 + i, i], i * 3600000);
+            }
+
+            i = 40;
+            // prediction for 3 hour prediction horizon should be around 85 as we have a linear function with k = 1
+            assert.deepEqual(ilSEMA.updateStream([42 + i, i], i * 3600000), { ts: 154800000, value: 85.0736902918679, horizon: 3 });
+        });
+    });
+    */
+    describe('SEMA model', function() {
+        it('imSEMA instantiated', function() {
+            assert.equal(typeof imSEMA, "object");
+        });
+
+        it('initial prediction', function() {
+            assert.equal(imSEMA.predict([0]), null);
+        });
+
+        it('update model - first time', function() {
+            imSEMA.partialFit([0], 42);
+            assert.equal(imSEMA.predict([0]), 42);
+        });
+
+        it('update model - 9 more times', function() {
+            for (let i = 0; i < 9; i++) {
+                imSEMA.partialFit([0], 42);
+            };
+            assert.equal(imSEMA.predict([0]), 42);
+        });
+
+        it('update model - with value 40', function() {
+            imSEMA.partialFit([0], 40);
+            assert.equal(imSEMA.predict([0]), 41.333333333333336);
+        });
+
+        it('update many different models', function() {
+            for (let j = 0; j < 3; j++) {
+                for (let h = 0; h < 24; h++) {
+                    imSEMA.partialFit([h], h + j);
+                }
+            }
+
+            for (let h = 1; h < 24; h++) {
+                assert.equal(imSEMA.predict([h]).toFixed(5), h + .88889);
+            }
+
+        });
+    });
+
 });
