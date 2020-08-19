@@ -44,9 +44,9 @@ let smConf = {
             horizon: 3,
             label: 0,
             options: {
+                method: "StructuredEMA",
                 structuralFactorPosition: 3,
-            },
-            method: "StructuredEMA"
+            }
         },
         "nodes": [
             {
