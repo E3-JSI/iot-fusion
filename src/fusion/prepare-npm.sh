@@ -9,6 +9,7 @@ cp package.json ./dist
 cp conf ./dist -r
 cp nodes ./dist -r
 cp tests ./dist -r
+cp models ./dist -r
 mkdir ./dist/common
 cp ../common/utils ./dist/common/utils -r
 cp ../common/brokers ./dist/common/brokers -r
