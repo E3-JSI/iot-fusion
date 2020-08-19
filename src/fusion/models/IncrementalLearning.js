@@ -74,22 +74,23 @@ class IncrementalLearning {
                     this.model = new qm.analytics.RecLinReg(this.options);
                 } else {
                     // moving average EMA
-                    console.log(this.options);
                     this.model = new IncrementalModelEMA(this.options);
                 }
             }
 
             let qmFeatureVec = new la.Vector(featureVec);
-            let prediction = this.model.predict(featureVec);
+            let prediction = this.model.predict(qmFeatureVec);
             // push prediction to prediction buffer
             this.predictionBuffer.push(prediction);
             if (this.predictionBuffer.length > this.horizon) this.predictionBuffer.shift();
 
             // TODO: remove this after testing
+            /*
             fs.appendFileSync('predictions.csv', this.predictionBuffer[0] + "," + featureVec[this.label] + '\n');
             if (prediction !== null) {
                 console.log("Prediction: ", prediction.toFixed(2));
             }
+            */
 
             // controlling buffer length
             if (this.buffer.length > this.horizon) this.buffer.shift();

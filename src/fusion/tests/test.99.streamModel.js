@@ -22,6 +22,18 @@ const modelConfigEMA = {
     }
 }
 
+// model config RecLinReg
+const modelConfigRecLinReg = {
+    fusionTick: 3600000,
+    model: {
+        horizon: 3,
+        label: 0,
+        options: {
+            method: 'RecLinReg'
+        }
+    }
+}
+
 // fake fusion object
 const fakeFusion = {
     fusion_id: "fakeFusion"
@@ -33,6 +45,7 @@ describe('incremental model', function() {
     before(function() {
         // incremental learning - wrapper around a model
         ilEMA = new IncrementalLearning(modelConfigEMA, fakeFusion);
+        ilRecLinReg = new IncrementalLearning(modelConfigRecLinReg, fakeFusion);
 
         // incremental models
         imEMA = new EMAIncrementalModel(modelConfigEMA.model.options, fakeFusion);
@@ -68,13 +81,13 @@ describe('incremental model', function() {
         });
     });
 
-    describe('incremental learning component', function() {
+    describe('incremental learning component - EMA', function() {
         it('ilEMA instantiated', function() {
             assert.equal(typeof ilEMA, "object");
         });
 
         it('update incremental model - first time', function() {
-            assert.deepEqual(ilEMA.updateStream([0, 42], 0), { ts: 10800000, value: null, horizon: 3 });
+            assert.deepEqual(ilEMA.updateStream([42, 0], 0), { ts: 10800000, value: null, horizon: 3 });
             ilEMA.updateStream([42, 1], 1 * 3600000);
             ilEMA.updateStream([42, 2], 2 * 3600000);
             ilEMA.updateStream([42, 3], 3 * 3600000);
@@ -84,6 +97,24 @@ describe('incremental model', function() {
 
         it ('update incremental mode - with value 40', function() {
             assert.deepEqual(ilEMA.updateStream([40, 6], 6 * 3600000),  { ts: 32400000, value: 41.333333333333336, horizon: 3 });
+        });
+
+    });
+
+    describe('incremental learning component - RecLinReg', function() {
+        it('ilRecLinReg instantiated', function() {
+            assert.equal(typeof ilRecLinReg, "object");
+        });
+
+        it('update incremental model - first time', function() {
+            assert.deepEqual(ilRecLinReg.updateStream([0, 42], 0), { ts: 10800000, value: 0, horizon: 3 });
+
+            for (let i = 1; i < 40; i++) {
+                ilRecLinReg.updateStream([42 + i, i], i * 3600000);
+            }
+
+            i = 40;
+            assert.deepEqual(ilRecLinReg.updateStream([42 + i, i], i * 3600000), { ts: 154800000, value: 91.91337396310927, horizon: 3 });
         });
 
     });
