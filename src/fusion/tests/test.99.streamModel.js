@@ -42,7 +42,7 @@ const modelConfigSEMA = {
         horizon: 3,
         label: 0,
         options: {
-            structuralFactorPosition: 0, // inside the feature vector, which has label already removed
+            structuralFactorPosition: 1,
             method: 'StructuredEMA'
         }
     }
@@ -103,35 +103,35 @@ describe('incremental model', function() {
         });
 
         it('initial prediction', function() {
-            assert.equal(imSEMA.predict([0]), null);
+            assert.equal(imSEMA.predict([0, 0]), null);
         });
 
         it('update model - first time', function() {
-            imSEMA.partialFit([0], 42);
-            assert.equal(imSEMA.predict([0]), 42);
+            imSEMA.partialFit([0, 0], 42);
+            assert.equal(imSEMA.predict([0, 0]), 42);
         });
 
         it('update model - 9 more times', function() {
             for (let i = 0; i < 9; i++) {
-                imSEMA.partialFit([0], 42);
+                imSEMA.partialFit([0, 0], 42);
             };
-            assert.equal(imSEMA.predict([0]), 42);
+            assert.equal(imSEMA.predict([0, 0]), 42);
         });
 
         it('update model - with value 40', function() {
-            imSEMA.partialFit([0], 40);
-            assert.equal(imSEMA.predict([0]), 41.333333333333336);
+            imSEMA.partialFit([0, 0], 40);
+            assert.equal(imSEMA.predict([0, 0]), 41.333333333333336);
         });
 
         it('update many different models', function() {
             for (let j = 0; j < 3; j++) {
                 for (let h = 0; h < 24; h++) {
-                    imSEMA.partialFit([h], h + j);
+                    imSEMA.partialFit([0, h], h + j);
                 }
             }
 
             for (let h = 1; h < 24; h++) {
-                assert.equal(imSEMA.predict([h]).toFixed(5), h + .88889);
+                assert.equal(imSEMA.predict([0, h]).toFixed(5), h + .88889);
             }
 
         });
