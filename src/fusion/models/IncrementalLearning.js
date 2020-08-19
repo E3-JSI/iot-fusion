@@ -74,6 +74,7 @@ class IncrementalLearning {
                     this.model = new qm.analytics.RecLinReg(this.options);
                 } else {
                     // moving average EMA
+                    console.log(this.options);
                     this.model = new IncrementalModelEMA(this.options);
                 }
             }

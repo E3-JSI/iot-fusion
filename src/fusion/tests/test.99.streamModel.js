@@ -35,7 +35,7 @@ describe('incremental model', function() {
         ilEMA = new IncrementalLearning(modelConfigEMA, fakeFusion);
 
         // incremental models
-        imEMA = new EMAIncrementalModel(modelConfigEMA, fakeFusion);
+        imEMA = new EMAIncrementalModel(modelConfigEMA.model.options, fakeFusion);
     });
 
     after(function() {
@@ -66,8 +66,16 @@ describe('incremental model', function() {
             imEMA.partialFit([], 40);
             assert.equal(imEMA.predict(), 41.333333333333336);
         });
+    });
 
+    describe('incremental learning component', function() {
+        it('ilEMA instantiated', function() {
+            assert.equal(typeof ilEMA, "object");
+        });
 
+        it('update incremental model - first time', function() {
+            assert.equal(ilEMA.updateStream([], 42), 42);
+        });
 
     });
 });

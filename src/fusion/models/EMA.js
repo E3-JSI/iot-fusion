@@ -15,11 +15,11 @@ class EMAIncrementalModel extends AbstractIncrementalModel{
      * constructor
      * @param {json} config
      */
-    constructor(config, fusion) {
-        super(config, fusion);
-        this.options = config.model.options;
+    constructor(options, fusion) {
+        super(options, fusion);
+        this.options = options;
         this.value = 0;
-        let optionN = config.model.options.N !== undefined ? config.model.options.N : 5;
+        let optionN = options.N !== undefined ? options.N : 5;
         this.k = 2 / (optionN + 1);
         this.EMA = null;
     }
