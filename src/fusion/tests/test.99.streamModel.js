@@ -35,7 +35,7 @@ const modelConfigRecLinReg = {
     }
 }
 
-// model config EMA
+// model config SEMA
 const modelConfigSEMA = {
     fusionTick: 3600000,
     model: {
@@ -60,6 +60,7 @@ describe('incremental model', function() {
         // incremental learning - wrapper around a model
         ilEMA = new IncrementalLearning(modelConfigEMA, fakeFusion);
         ilRecLinReg = new IncrementalLearning(modelConfigRecLinReg, fakeFusion);
+        ilSEMA = new IncrementalLearning(modelConfigSEMA, fakeFusion);
 
         // incremental models
         imEMA = new EMAIncrementalModel(modelConfigEMA.model.options, fakeFusion);
@@ -93,6 +94,46 @@ describe('incremental model', function() {
         it('update model - with value 40', function() {
             imEMA.partialFit([], 40);
             assert.equal(imEMA.predict(), 41.333333333333336);
+        });
+    });
+
+    describe('SEMA model', function() {
+        it('imSEMA instantiated', function() {
+            assert.equal(typeof imSEMA, "object");
+        });
+
+        it('initial prediction', function() {
+            assert.equal(imSEMA.predict([0]), null);
+        });
+
+        it('update model - first time', function() {
+            imSEMA.partialFit([0], 42);
+            assert.equal(imSEMA.predict([0]), 42);
+        });
+
+        it('update model - 9 more times', function() {
+            for (let i = 0; i < 9; i++) {
+                imSEMA.partialFit([0], 42);
+            };
+            assert.equal(imSEMA.predict([0]), 42);
+        });
+
+        it('update model - with value 40', function() {
+            imSEMA.partialFit([0], 40);
+            assert.equal(imSEMA.predict([0]), 41.333333333333336);
+        });
+
+        it('update many different models', function() {
+            for (let j = 0; j < 3; j++) {
+                for (let h = 0; h < 24; h++) {
+                    imSEMA.partialFit([h], h + j);
+                }
+            }
+
+            for (let h = 1; h < 24; h++) {
+                assert.equal(imSEMA.predict([h]).toFixed(5), h + .88889);
+            }
+
         });
     });
 
@@ -135,62 +176,21 @@ describe('incremental model', function() {
 
     });
 
-    /*
     describe('incremental learning component - StructuredEMA', function() {
         it('ilSEMA instantiated', function() {
             assert.equal(typeof ilSEMA, "object");
         });
 
         it('update incremental model - first time', function() {
-            assert.deepEqual(ilSEMA.updateStream([42, 0], 0), { ts: 10800000, value: 0, horizon: 3 });
+            assert.deepEqual(ilSEMA.updateStream([42, 0], 0), { ts: 10800000, value: null, horizon: 3 });
 
-            for (let i = 1; i < 40; i++) {
-                ilSEMA.updateStream([42 + i, i], i * 3600000);
+            for (let i = 1; i < 72; i++) {
+                ilSEMA.updateStream([42 + i, i % 24], i * 3600000);
             }
 
-            i = 40;
+            i = 73;
             // prediction for 3 hour prediction horizon should be around 85 as we have a linear function with k = 1
-            assert.deepEqual(ilSEMA.updateStream([42 + i, i], i * 3600000), { ts: 154800000, value: 85.0736902918679, horizon: 3 });
-        });
-    });
-    */
-    describe('SEMA model', function() {
-        it('imSEMA instantiated', function() {
-            assert.equal(typeof imSEMA, "object");
-        });
-
-        it('initial prediction', function() {
-            assert.equal(imSEMA.predict([0]), null);
-        });
-
-        it('update model - first time', function() {
-            imSEMA.partialFit([0], 42);
-            assert.equal(imSEMA.predict([0]), 42);
-        });
-
-        it('update model - 9 more times', function() {
-            for (let i = 0; i < 9; i++) {
-                imSEMA.partialFit([0], 42);
-            };
-            assert.equal(imSEMA.predict([0]), 42);
-        });
-
-        it('update model - with value 40', function() {
-            imSEMA.partialFit([0], 40);
-            assert.equal(imSEMA.predict([0]), 41.333333333333336);
-        });
-
-        it('update many different models', function() {
-            for (let j = 0; j < 3; j++) {
-                for (let h = 0; h < 24; h++) {
-                    imSEMA.partialFit([h], h + j);
-                }
-            }
-
-            for (let h = 1; h < 24; h++) {
-                assert.equal(imSEMA.predict([h]).toFixed(5), h + .88889);
-            }
-
+            assert.deepEqual(ilSEMA.updateStream([42 + i, i % 24], i * 3600000), { ts: 154800000, value: 85.0736902918679, horizon: 3 });
         });
     });
 

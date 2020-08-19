@@ -75,7 +75,7 @@ class IncrementalLearning {
                     this.model = new qm.analytics.RecLinReg(this.options);
                 } else if (this.options.method === "StructuredEMA") {
                     // EMA structured by first feature
-                    this.model = new IncrementalModelStructuredEMA(this.options);
+                    this.model = new StructuredEMAIncrementalModel(this.options);
                 } else {
                     // Exponential moving average
                     this.model = new EMAIncrementalModel(this.options);
