@@ -1,5 +1,5 @@
 /**
- * streamModel
+ * IncrementalLearning
  * Main clas for stream modeling, connected to stream fusion. The component
  * expects uniformly resampled stream.
  */
@@ -9,7 +9,11 @@ const qm = require('qminer');
 const la = require('qminer').la;
 const fs = require('fs');
 
-class streamModel {
+// additional incremental models
+const IncrementalModelEMA = require('./EMA');
+
+
+class IncrementalLearning {
     /**
      * constructor
      * @param {json} config
@@ -29,7 +33,7 @@ class streamModel {
         // create empty buffer
         this.buffer = [];
         // set model filename
-        this.filename = './models/' + fusion.fusion_id + "-lr.bin";
+        this.filename = './models/' + fusion.fusion_id + "-" + this.options.method + ".bin";
     }
 
     /**
@@ -55,6 +59,7 @@ class streamModel {
             }
         }
 
+        // model initiation can only be done after first sample is received
         if (this.buffer.length > 0) {
 
             // initialize model
@@ -65,16 +70,19 @@ class streamModel {
                 this.options.dim = featureVec.length;
 
                 // initialize method (only lin. reg. supported by now)
-                this.model = new qm.analytics.RecLinReg(this.options);
+                if (this.options.method === "RecLinReg") {
+                    this.model = new qm.analytics.RecLinReg(this.options);
+                } else {
+                    // moving average EMA
+                    this.model = new IncrementalModelEMA(this.options);
+                }
             }
 
             let qmFeatureVec = new la.Vector(featureVec);
-            let prediction = this.makePrediction(qmFeatureVec);
+            let prediction = this.model.predict(featureVec);
             // push prediction to prediction buffer
             this.predictionBuffer.push(prediction);
             if (this.predictionBuffer.length > this.horizon) this.predictionBuffer.shift();
-
-            // TODO: send prediction to appropriate channel
 
             // TODO: remove this after testing
             fs.appendFileSync('predictions.csv', this.predictionBuffer[0] + "," + featureVec[this.label] + '\n');
@@ -84,16 +92,12 @@ class streamModel {
             if (this.buffer.length > this.horizon) this.buffer.shift();
 
             let unixts = zeroTimestamp + this.horizon * this.fusionTick;
-            return [unixts, prediction, this.horizon];
+            return {
+                ts: unixts,
+                value: prediction,
+                horizon: this.horizon
+            };
         }
-    }
-
-    /**
-     * makePrediction
-     */
-    makePrediction(featureVec) {
-        let prediction = this.model.predict(featureVec);
-        return prediction;
     }
 
     /**
@@ -118,4 +122,4 @@ class streamModel {
 }
 
 // expose class to the outside world
-module.exports = streamModel;
+module.exports = IncrementalLearning;
