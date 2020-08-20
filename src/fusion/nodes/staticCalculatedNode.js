@@ -23,6 +23,7 @@ class streamingAirQualityNode extends streamingNode {
         // remember nodeid name
         this.nodeId = config.nodeid;
         this.nodeFrequency = config.nodeFrequency !== undefined ? config.nodeFrequency : 3600000;
+        this.holidays = config.holidays !== undefined ? config.holidays : [ '2020-12-25', '2021-01-01'];
 
         // initialize last timestamp
         this.lastTimestamp = 0;
@@ -66,7 +67,69 @@ class streamingAirQualityNode extends streamingNode {
     }
 
     /**
+     * Calculate a particular static for a particular timestamp.
      *
+     * @param {int} ts Timestamp in milliseconds.
+     * @param {string} attr Attribute name.
+     */
+    staticValue(ts, attr) {
+        let val;
+
+        if (attr == "random") {
+            val = Math.random();
+        } else if (attr == "hourOfDay") {
+            val = new Date(ts).getHours();
+        } else if (attr == "dayOfWeek") {
+            val = new Date(ts).getDay();
+        } else if (attr == "dayAfterHoliday") {
+            val = 0;
+            let date = new Date(ts - 24 * 3600 * 1000).toJSON().slice(0, 10);
+            if (date in this.holidays) val = 1;
+        } else if (attr == "dayBeforeHoliday") {
+            val = 0;
+            let date = new Date(ts + 24 * 3600 * 1000).toJSON().slice(0, 10);
+            if (date in this.holidays) val = 1;
+        } else if (attr == "dayOfYear") {
+            let date = new Date(ts);
+            let first = new Date(date.getFullYear(), 0, 1);
+            val = Math.round(((date - first) / 1000 / 60 / 60 / 24) + .5, 0);
+        } else if (attr == "dayOfMonth") {
+            val = new Date(ts).getDate();
+        } else if (attr == "holiday") {
+            val = 0;
+            let date = new Date(ts).toJSON().slice(0, 10);
+            if (date in this.holidays) val = 1;
+        } else if (attr == "monthOfYear") {
+            val = new Date(ts).getMonth() + 1;
+        } else if (attr == "weekEnd") {
+            val = 0;
+            let day = new Date(ts).getDay();
+            if (day >= 5) val = 1;
+        }
+
+        return val;
+    }
+
+    /**
+     * Calculate static values or derived values for a particular timestamp.
+     *
+     * @param {int} ts Timestamp.
+     * @param {string} attr Attribute name.
+     */
+    calculateValue(ts, attr) {
+        // format of aggr: name or name|aggr|windowInMilliseconds
+        let names = mainStr.split("|");
+        const name = names[0];
+        if (names.length !== 3) {
+            return staticValue(ts, name);
+        } else {
+            // not implemented
+            return -1;
+        }
+    }
+
+    /**
+     * Returns partial feature vector.
      */
     getPartialFeatureVector() {
         // define feature vector
@@ -75,8 +138,22 @@ class streamingAirQualityNode extends streamingNode {
         for (let i in this.config.attributes) {
             let attributes = this.config.attributes[i].attributes;
 
-            // get time offset for current attribute family
-            let offsetTime = this.config.attributes[i].time;
+            // get time for current attribute family
+            let offsetTimestamp = this.zeroTimestamp + this.config.attributes[i].time * this.nodeFrequency;
+
+            for (let j in attributes) {
+                let type = attributes[j].type; // value, timeDiff
+                let attrName = attributes[j].name;
+
+                if (type == "value") {
+                    let value = this.calculateValue(offsetTimestamp, attrName);
+                    vec.push(value);
+                } else if (type == "timeDiff") {
+                    let offset2Timestamp = offestTimestamp - attributes[j].interval * this.nodeFrequency;
+                    let value = this.calculateValue(offsetTimestamp, attrName) - this.calculateValue(offset2Timestamp, attrName);
+                    vec.push(value);
+                }
+            }
         }
     }
 
