@@ -44,7 +44,7 @@ let aggrConfigs = {
 let fusionConfig = {
     "fusionModel": "staticCalculated",
     "connection": {
-        "type": "mqtt"
+        "type": "none"
     },
     "fusionTick": 60 * 60 * 1000,                                           // 1h
     "nodes": [
@@ -219,6 +219,36 @@ describe('staticCalculatedNode', function() {
         it ('fusion with static vector', function() {
             fusion.nodes[0].processRecord(JSON.parse('{"time": 1451606400,"value": 10.0}'));
             fusion.nodes[0].processRecord(JSON.parse('{"time": 1451610000,"value": 20.0}'));
+
+            fusion.nodes[0].setMasterOffset();
+            fusion.nodes[1].setSlaveOffset(0);
+            assert.deepEqual(fusion.buildFeatureVector(), [
+                20,
+                15,
+                10,
+                20,
+                50,
+                1,
+                4,
+                0,
+                0,
+                1,
+                1,
+                0,
+                1,
+                0,
+                0.2857142857142857,
+                1,
+                365,
+                0.2040816326530618,
+                0,
+                0,
+                365,
+                31,
+                0,
+                -19
+            ]);
+
         })
     });
 });
