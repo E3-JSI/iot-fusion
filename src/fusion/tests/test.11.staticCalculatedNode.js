@@ -129,12 +129,25 @@ describe('staticCalculatedNode', function() {
         it ('slave offset set correctly: no data needed', function() {
             assert.equal(scn.setSlaveOffset(0), true);
         });
+
+        it ('holidays', function() {
+            assert.deepEqual(scn.holidays, [ '2020-08-21', '2020-08-19' ]);
+        });
     });
 
     describe('data retrieval', function() {
 
         it ('data record saved correctly', function() {
+            const ts = 1597938533433;
+            assert.equal(scn.staticValue(ts, "hourOfDay"), 17);
+            assert.equal(scn.staticValue(ts, "dayOfWeek"), 4);
+            assert.equal(scn.staticValue(ts, "dayOfMonth"), 20);
+            assert.equal(scn.staticValue(ts, "monthOfYear"), 8);
+            assert.equal(scn.staticValue(ts, "weekEnd"), 0);
 
+            assert.equal(scn.staticValue(ts, "dayAfterHoliday"), 1);
+            assert.equal(scn.staticValue(ts, "holiday"), 0);
+            assert.equal(scn.staticValue(ts, "dayBeforeHoliday"), 1);
         });
     });
 });

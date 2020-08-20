@@ -84,11 +84,11 @@ class streamingAirQualityNode extends streamingNode {
         } else if (attr == "dayAfterHoliday") {
             val = 0;
             let date = new Date(ts - 24 * 3600 * 1000).toJSON().slice(0, 10);
-            if (date in this.holidays) val = 1;
+            if (this.holidays.includes(date)) val = 1;
         } else if (attr == "dayBeforeHoliday") {
             val = 0;
             let date = new Date(ts + 24 * 3600 * 1000).toJSON().slice(0, 10);
-            if (date in this.holidays) val = 1;
+            if (this.holidays.includes(date)) val = 1;
         } else if (attr == "dayOfYear") {
             let date = new Date(ts);
             let first = new Date(date.getFullYear(), 0, 1);
@@ -98,7 +98,7 @@ class streamingAirQualityNode extends streamingNode {
         } else if (attr == "holiday") {
             val = 0;
             let date = new Date(ts).toJSON().slice(0, 10);
-            if (date in this.holidays) val = 1;
+            if (this.holidays.includes(date)) val = 1;
         } else if (attr == "monthOfYear") {
             val = new Date(ts).getMonth() + 1;
         } else if (attr == "weekEnd") {
