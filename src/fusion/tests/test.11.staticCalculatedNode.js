@@ -1,4 +1,4 @@
-const staticCalculationNode = require('../nodes/staticCalculationNode.js');
+const staticCalculationNode = require('../nodes/staticCalculatedNode.js');
 const fileManager = require('../../common/utils/fileManager.js');
 const qm = require('qminer');
 const fs = require('fs');
@@ -60,7 +60,7 @@ function processRecordDummyCb(nodeI, parent) {
     return true;
 }
 
-describe('streamingAirQualityNode', function() {
+describe('staticCalculatedNode', function() {
     let base;
     let sn;
 
@@ -106,12 +106,8 @@ describe('streamingAirQualityNode', function() {
             assert.equal(scn.parent, null);
         });
 
-        it ('master flag returned correctly no matter the config', function() {
-            assert.equal(scn.master, false);
-        });
-
         it ('isMaster function', function() {
-            assert.equal(scn.isMaster(), true);
+            assert.equal(scn.isMaster(), false);
         });
 
         it ('checkDataAvailability function exists', function() {
@@ -130,8 +126,8 @@ describe('streamingAirQualityNode', function() {
             assert.equal(scn.isMaster(), false);
         });
 
-        it ('slave offset set correctly: no data', function() {
-            assert.equal(scn.setSlaveOffset(0), false);
+        it ('slave offset set correctly: no data needed', function() {
+            assert.equal(scn.setSlaveOffset(0), true);
         });
     });
 
