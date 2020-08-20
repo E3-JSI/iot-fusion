@@ -181,7 +181,9 @@ class streamFusion {
                     let prediction;
                     if (featureVector.length != 0) {
                         prediction = self.streamModel.updateStream(featureVector, zeroTimestamp);
-                        self.broadcastPrediction(prediction.ts, prediction.value, prediction.horizon);
+                        const sensor_id = self.config.nodes[0].attributes[0].attributes[0].name !== undefined ? self.config.nodes[0].attributes[0].attributes[0].name : "uknown";
+                        const method = self.config.model.options.method !== undefined ? self.config.model.options.method : "unknown";
+                        self.broadcastPrediction(prediction.ts, prediction.value, prediction.horizon, sensor_id, method);
                     }
                 } else {
                     // if there is no model included, than feature vector is broadcasted
@@ -248,8 +250,14 @@ class streamFusion {
      * @param {int} horizon             Prediction horizon in units of fusionTick.
      * Broadcasts predictions via appropriate broke.
      */
-    broadcastPrediction(timestamp, value, horizon) {
-        let featureMessage = JSON.stringify({ stampm: timestamp, value: value, horizon: horizon });
+    broadcastPrediction(timestamp, value, horizon, sensor_id, method) {
+        let featureMessage = JSON.stringify({
+            stampm: timestamp,
+            value: value,
+            sensor_id: sensor_id,
+            method: method,
+            horizon: horizon
+        });
         this.broker.publish(featureMessage);
     }
 
