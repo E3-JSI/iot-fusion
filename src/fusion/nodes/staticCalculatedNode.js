@@ -28,6 +28,9 @@ class streamingAirQualityNode extends streamingNode {
         // initialize last timestamp
         this.lastTimestamp = 0;
 
+        // make fake buffer
+        this.buffer = [ 1, 2, 3 ];
+
         // we do not run post constructor for this node since it does not connect to any
         // brokers
         // super.postConstructor();

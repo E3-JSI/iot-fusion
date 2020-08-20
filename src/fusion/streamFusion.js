@@ -16,6 +16,7 @@ const streamingTrafficCounterNode = require('./nodes/streamingTrafficCounterNode
 const streamingAirQualityNode = require('./nodes/streamingAirQualityNode.js');
 const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
+const staticCalculatedNode = require('./nodes/staticCalculatedNode.js');
 const IncrementalLearning = require ('./models/IncrementalLearning.js');
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 
@@ -92,6 +93,8 @@ class streamFusion {
                 this.nodes.push(new streamingTrainNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else if (nodeConfig["type"] == "static") {
                 this.nodes.push(new streamingStaticNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
+            } else if (nodeConfig["type"] == "calculated") {
+                this.nodes.push(new staticCalculatedNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else if (nodeConfig["type"] == "weather") {
                 this.nodes.push(new streamingWeatherNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else {

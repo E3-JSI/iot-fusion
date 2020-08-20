@@ -1,4 +1,5 @@
 const staticCalculationNode = require('../nodes/staticCalculatedNode.js');
+const StreamFusion = require('../streamFusion.js');
 const fileManager = require('../../common/utils/fileManager.js');
 const qm = require('qminer');
 const fs = require('fs');
@@ -12,7 +13,30 @@ let connectionConfig = {
 }
 
 // basic aggregate config
-let aggrConfigs = { };
+let aggrConfigs = {
+    "timevalue": [
+        { "field": "value", "tick": [
+            { "type": "winbuf", "winsize": 6 * 60 * 60 * 1000, "sub": [          // 6h
+                { "type": "ma" }
+            ]},
+            { "type": "winbuf", "winsize": 12 * 60 * 60 * 1000, "sub": [         // 12s
+                {"type": "ma" },
+                {"type": "min" },
+                {"type": "max" },
+                {"type": "variance" }
+            ]},
+            { "type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [         // 1d
+                {"type": "ma" },
+                {"type": "min" },
+                {"type": "max" },
+                {"type": "variance" }
+            ]},
+            { "type": "winbuf", "winsize": 7 * 24 * 60 * 60 * 1000, "sub": [         // 1w
+                { "type": "ma" }
+            ]}
+        ]}
+    ]
+};
 
 // basic fusion config
 // for testing reasons we are overriding fusionTick, which is in each node
@@ -25,11 +49,27 @@ let fusionConfig = {
     "fusionTick": 60 * 60 * 1000,                                           // 1h
     "nodes": [
         {
+            "type": "timevalue",
+            "nodeid": "timevalue",
+            "aggrConfigId": "timevalue",
+            "master": true,
+            "attributes": [
+                { "time": 0, "attributes": [                                // current time
+                    { type: "value", "name": "value" },
+                    { type: "value", "name": "value|ma|86400000" },
+                    { type: "value", "name": "value|min|86400000" },
+                    { type: "value", "name": "value|max|86400000" },
+                    { type: "value", "name": "value|variance|86400000" }
+                ]}
+            ]
+        },
+        {
             "type": "calculated",
             "nodeid": "calculated",
             "aggrConfigId": "calculated",
             "nodeFrequency": 3600000,
-            "master": true,
+            "fusionTick": 3600000,  // debug this - this is set via streamingNode or similar
+            "master": false,
             "holidays": [ '2020-08-21', '2020-08-19' ],
             "attributes": [
                 { "time": 0, "attributes": [                                           // current time
@@ -82,7 +122,8 @@ describe('staticCalculatedNode', function() {
         // ssln = new streamingSmartLampNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
         // stcn = new streamingTrafficCounterNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
         // saqn = new streamingAirQualityNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
-        scn = new staticCalculationNode(base, connectionConfig, fusionConfig["nodes"][0], aggrConfigs, processRecordDummyCb, 99, null);
+        scn = new staticCalculationNode(base, connectionConfig, fusionConfig["nodes"][1], aggrConfigs, processRecordDummyCb, 99, null);
+        fusion = new StreamFusion(connectionConfig, fusionConfig, aggrConfigs);
     });
 
     after(function() {
@@ -95,7 +136,7 @@ describe('staticCalculatedNode', function() {
         });
 
         it('config saved', function() {
-            assert.deepEqual(scn.config, fusionConfig["nodes"][0]);
+            assert.deepEqual(scn.config, fusionConfig["nodes"][1]);
         });
 
         it('fusionNodeI correctly saved', function() {
@@ -172,6 +213,12 @@ describe('staticCalculatedNode', function() {
                 [ 17, 4, 1, 1, 233, 20, 0, 8, 0, 2/7, 226, 233, 0.2040816326530619, 0, 0, 232, 19, 1, 5 ]);
         });
 
+    });
 
+    describe('stream fusion', function() {
+        it ('fusion with static vector', function() {
+            fusion.nodes[0].processRecord(JSON.parse('{"time": 1451606400,"value": 10.0}'));
+            fusion.nodes[0].processRecord(JSON.parse('{"time": 1451610000,"value": 20.0}'));
+        })
     });
 });
