@@ -106,7 +106,7 @@ class streamFusion {
             // if model is included, than predictions will be sent
             this.topic = "predictions_" + this.fusion_id;
             if (config.model.topic !== undefined) {
-                this.topic = this.model.topic,
+                this.topic = config.model.topic;
             }
         }
 
