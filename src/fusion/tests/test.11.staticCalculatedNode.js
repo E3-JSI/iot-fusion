@@ -33,7 +33,7 @@ let fusionConfig = {
             "holidays": [ '2020-08-21', '2020-08-19' ],
             "attributes": [
                 { "time": 0, "attributes": [                                           // current time
-                    { type: "value", name: "timeOfDay" },
+                    { type: "value", name: "hourOfDay" },
                     { type: "value", name: "dayOfWeek" },
                     { type: "value", name: "dayAfterHoliday" },
                     { type: "value", name: "dayBeforeHoliday" },
@@ -43,13 +43,13 @@ let fusionConfig = {
                     { type: "value", name: "monthOfYear" },
                     { type: "value", name: "weekEnd" }
                 ]},
-                { "time": -24 * 60 * 60 * 1000, "attributes": [                        // 24h ago
+                { "time": -24, "attributes": [                                          // 24h ago
                     { type: "value", name: "dayAfterHoliday" },
                     { type: "value", name: "dayBeforeHoliday" },
                     { type: "value", name: "dayOfYear" },
                     { type: "value", name: "dayOfMonth" },
                     { type: "value", name: "holiday" },
-                    { type: "timeDiff", name: "dayOfYear", interval: 5}
+                    { type: "timeDiff", name: "hourOfDay", interval: 5}
                 ]},
             ]
         }
@@ -144,7 +144,6 @@ describe('staticCalculatedNode', function() {
             assert.equal(scn.staticValue(ts, "dayOfMonth"), 20);
             assert.equal(scn.staticValue(ts, "monthOfYear"), 8);
             assert.equal(scn.staticValue(ts, "weekEnd"), 0);
-
             assert.equal(scn.staticValue(ts, "dayAfterHoliday"), 1);
             assert.equal(scn.staticValue(ts, "holiday"), 0);
             assert.equal(scn.staticValue(ts, "dayBeforeHoliday"), 1);
@@ -157,10 +156,15 @@ describe('staticCalculatedNode', function() {
             assert.equal(scn.calculateValue(ts, "dayOfMonth"), 21);
             assert.equal(scn.calculateValue(ts, "monthOfYear"), 8);
             assert.equal(scn.calculateValue(ts, "weekEnd"), 0);
-
             assert.equal(scn.calculateValue(ts, "dayAfterHoliday"), 0);
             assert.equal(scn.calculateValue(ts, "holiday"), 1);
             assert.equal(scn.calculateValue(ts, "dayBeforeHoliday"), 0);
+        });
+
+        it ('check feature vector', function() {
+            const ts = 1597938533433;
+            scn.setSlaveOffset(ts);
+            assert.deepEqual(scn.getPartialFeatureVector(), [ 17, 4, 1, 1, 233, 20, 0, 8, 0, 0, 0, 232, 19, 1, 5 ]);
         });
 
 

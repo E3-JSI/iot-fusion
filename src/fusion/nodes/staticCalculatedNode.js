@@ -149,12 +149,14 @@ class streamingAirQualityNode extends streamingNode {
                     let value = this.calculateValue(offsetTimestamp, attrName);
                     vec.push(value);
                 } else if (type == "timeDiff") {
-                    let offset2Timestamp = offestTimestamp - attributes[j].interval * this.nodeFrequency;
+                    let offset2Timestamp = offsetTimestamp - attributes[j].interval * this.nodeFrequency;
                     let value = this.calculateValue(offsetTimestamp, attrName) - this.calculateValue(offset2Timestamp, attrName);
                     vec.push(value);
                 }
             }
         }
+
+        return vec;
     }
 
     /**
