@@ -105,6 +105,9 @@ class streamFusion {
             this.streamModel = new IncrementalLearning(config, self);
             // if model is included, than predictions will be sent
             this.topic = "predictions_" + this.fusion_id;
+            if (config.model.topic !== undefined) {
+                this.topic = this.model.topic,
+            }
         }
 
         // connecting to Kafka

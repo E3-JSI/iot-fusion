@@ -1,11 +1,11 @@
 /**
- * Main stream fusion example for smartmeters (Mlaka).
+ * Main stream fusion example for smartmeters (In2Dreams).
  */
 
 // includes
 const StreamFusion = require('./streamFusion.js');
 
-// SMART-CITY CONFIG
+// SUBSTATION CONFIG
 let smConf = {
     "aggr": {
         "smartlamp": [
@@ -34,7 +34,6 @@ let smConf = {
         },
         "fusionTick": 60 * 60 * 1000,                                   // resampling on 60 min
         "model": {
-            topic: "predictions_ST0005-0000",
             horizon: 3,
             label: 0,
             options: {
@@ -97,7 +96,6 @@ for (let i = 0; i <= 28; i++) {
     nodeId = "ST0005-00" + lZ(i);
     smConf["fusion"]["nodes"][0]["nodeid"] = nodeId;
     smConf["fusion"]["fusionModel"] = nodeId + "_3h";
-    smConf["fusion"]["model"]["topic"] = "predictions_" + nodeId;
 
     fusion.push(new StreamFusion(connectionConfig, smConf["fusion"], smConf["aggr"]));
 } //
