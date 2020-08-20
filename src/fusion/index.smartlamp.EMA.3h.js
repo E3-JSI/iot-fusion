@@ -38,7 +38,8 @@ let smConf = {
             horizon: 3,
             label: 0,
             options: {
-                method: "EMA"
+                method: "EMA",
+                N: 5
             }
         },
         "nodes": [
