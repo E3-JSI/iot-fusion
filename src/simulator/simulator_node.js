@@ -64,11 +64,11 @@ class SimulatorNode {
         } else if (field.type == "dayAfterHoliday") {
             val = 0;
             let date = new Date(ts - 24 * 3600 * 1000).toJSON().slice(0, 10);
-            if (date in this.holidays) val = 1;
+            if (this.holidays.includes(date)) val = 1;
         } else if (field.type == "dayBeforeHoliday") {
             val = 0;
             let date = new Date(ts + 24 * 3600 * 1000).toJSON().slice(0, 10);
-            if (date in this.holidays) val = 1;
+            if (this.holidays.includes(date)) val = 1;
         } else if (field.type == "dayOfYear") {
             let date = new Date(ts);
             let first = new Date(date.getFullYear(), 0, 1);
@@ -78,7 +78,7 @@ class SimulatorNode {
         } else if (field.type == "holiday") {
             val = 0;
             let date = new Date(ts).toJSON().slice(0, 10);
-            if (date in this.holidays) val = 1;
+            if (this.holidays.includes(date)) val = 1;
         } else if (field.type == "monthOfYear") {
             val = new Date(ts).getMonth() + 1;
         } else if (field.type == "weekEnd") {

@@ -16,6 +16,7 @@ const streamingTrafficCounterNode = require('./nodes/streamingTrafficCounterNode
 const streamingAirQualityNode = require('./nodes/streamingAirQualityNode.js');
 const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
+const staticCalculatedNode = require('./nodes/staticCalculatedNode.js');
 const IncrementalLearning = require ('./models/IncrementalLearning.js');
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 
@@ -92,6 +93,8 @@ class streamFusion {
                 this.nodes.push(new streamingTrainNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else if (nodeConfig["type"] == "static") {
                 this.nodes.push(new streamingStaticNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
+            } else if (nodeConfig["type"] == "calculated") {
+                this.nodes.push(new staticCalculatedNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else if (nodeConfig["type"] == "weather") {
                 this.nodes.push(new streamingWeatherNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else {
@@ -105,6 +108,9 @@ class streamFusion {
             this.streamModel = new IncrementalLearning(config, self);
             // if model is included, than predictions will be sent
             this.topic = "predictions_" + this.fusion_id;
+            if (config.model.topic !== undefined) {
+                this.topic = config.model.topic;
+            }
         }
 
         // connecting to Kafka
@@ -178,7 +184,9 @@ class streamFusion {
                     let prediction;
                     if (featureVector.length != 0) {
                         prediction = self.streamModel.updateStream(featureVector, zeroTimestamp);
-                        self.broadcastPrediction(prediction.ts, prediction.value, prediction.horizon);
+                        const sensor_id = self.config.nodes[0].attributes[0].attributes[0].name !== undefined ? self.config.nodes[0].attributes[0].attributes[0].name : "uknown";
+                        const method = self.config.model.options.method !== undefined ? self.config.model.options.method : "unknown";
+                        self.broadcastPrediction(prediction.ts, prediction.value, prediction.horizon, sensor_id, method);
                     }
                 } else {
                     // if there is no model included, than feature vector is broadcasted
@@ -245,8 +253,14 @@ class streamFusion {
      * @param {int} horizon             Prediction horizon in units of fusionTick.
      * Broadcasts predictions via appropriate broke.
      */
-    broadcastPrediction(timestamp, value, horizon) {
-        let featureMessage = JSON.stringify({ timestamp: timestamp, value: value, horizon: horizon });
+    broadcastPrediction(timestamp, value, horizon, sensor_id, method) {
+        let featureMessage = JSON.stringify({
+            stampm: timestamp,
+            value: value,
+            sensor_id: sensor_id,
+            method: method,
+            horizon: horizon
+        });
         this.broker.publish(featureMessage);
     }
 
