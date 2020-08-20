@@ -137,7 +137,7 @@ describe('staticCalculatedNode', function() {
 
     describe('data retrieval', function() {
 
-        it ('data record saved correctly', function() {
+        it ('static values retrieved correctly', function() {
             const ts = 1597938533433;
             assert.equal(scn.staticValue(ts, "hourOfDay"), 17);
             assert.equal(scn.staticValue(ts, "dayOfWeek"), 4);
@@ -149,5 +149,20 @@ describe('staticCalculatedNode', function() {
             assert.equal(scn.staticValue(ts, "holiday"), 0);
             assert.equal(scn.staticValue(ts, "dayBeforeHoliday"), 1);
         });
+
+        it ('calculated values retrieved correctly', function() {
+            const ts = 1597938533433 + 24 * 60 * 60 * 1000;
+            assert.equal(scn.calculateValue(ts, "hourOfDay"), 17);
+            assert.equal(scn.calculateValue(ts, "dayOfWeek"), 5);
+            assert.equal(scn.calculateValue(ts, "dayOfMonth"), 21);
+            assert.equal(scn.calculateValue(ts, "monthOfYear"), 8);
+            assert.equal(scn.calculateValue(ts, "weekEnd"), 0);
+
+            assert.equal(scn.calculateValue(ts, "dayAfterHoliday"), 0);
+            assert.equal(scn.calculateValue(ts, "holiday"), 1);
+            assert.equal(scn.calculateValue(ts, "dayBeforeHoliday"), 0);
+        });
+
+
     });
 });

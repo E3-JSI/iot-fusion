@@ -104,7 +104,7 @@ class streamingAirQualityNode extends streamingNode {
         } else if (attr == "weekEnd") {
             val = 0;
             let day = new Date(ts).getDay();
-            if (day >= 5) val = 1;
+            if ((day >= 6) || (day == 0)) val = 1;
         }
 
         return val;
@@ -118,10 +118,10 @@ class streamingAirQualityNode extends streamingNode {
      */
     calculateValue(ts, attr) {
         // format of aggr: name or name|aggr|windowInMilliseconds
-        let names = mainStr.split("|");
+        let names = attr.split("|");
         const name = names[0];
         if (names.length !== 3) {
-            return staticValue(ts, name);
+            return this.staticValue(ts, name);
         } else {
             // not implemented
             return -1;
