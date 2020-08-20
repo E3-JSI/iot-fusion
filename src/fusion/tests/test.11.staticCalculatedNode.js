@@ -41,7 +41,11 @@ let fusionConfig = {
                     { type: "value", name: "dayOfMonth" },
                     { type: "value", name: "holiday" },
                     { type: "value", name: "monthOfYear" },
-                    { type: "value", name: "weekEnd" }
+                    { type: "value", name: "weekEnd" },
+                    { type: "value", name: "weekEnd|ma|604800000" },
+                    { type: "value", name: "dayOfYear|min|604800000" },
+                    { type: "value", name: "dayOfYear|max|604800000" },
+                    { type: "value", name: "weekEnd|variance|604800000" }
                 ]},
                 { "time": -24, "attributes": [                                          // 24h ago
                     { type: "value", name: "dayAfterHoliday" },
@@ -164,7 +168,8 @@ describe('staticCalculatedNode', function() {
         it ('check feature vector', function() {
             const ts = 1597938533433;
             scn.setSlaveOffset(ts);
-            assert.deepEqual(scn.getPartialFeatureVector(), [ 17, 4, 1, 1, 233, 20, 0, 8, 0, 0, 0, 232, 19, 1, 5 ]);
+            assert.deepEqual(scn.getPartialFeatureVector(),
+                [ 17, 4, 1, 1, 233, 20, 0, 8, 0, 2/7, 226, 233, 0.2040816326530619, 0, 0, 232, 19, 1, 5 ]);
         });
 
 

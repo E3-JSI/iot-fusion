@@ -110,6 +110,32 @@ class streamingAirQualityNode extends streamingNode {
         return val;
     }
 
+
+    /**
+     * Calculates the aggregate.
+     *
+     * @param {string} aggr Type of aggregate.
+     * @param {array} values Array of floats.
+     */
+    calculateAggregate(aggr, values) {
+        let val = -1;
+
+        if (aggr === "ma") {
+            val = values.reduce((a, b) => a + b) / values.length;
+        } else if (aggr === "variance") {
+            let mean = values.reduce((a, b) => a + b) / values.length;
+            let intermediate = values.map((num) => Math.pow(num - mean, 2));
+            // calculate mean
+            val = intermediate.reduce((a, b) => a + b) / intermediate.length;
+        } else if (aggr === "min") {
+            val = Math.min(...values);
+        } else if (aggr === "max") {
+            val = Math.max(...values);
+        }
+
+        return val;
+    }
+
     /**
      * Calculate static values or derived values for a particular timestamp.
      *
@@ -123,8 +149,17 @@ class streamingAirQualityNode extends streamingNode {
         if (names.length !== 3) {
             return this.staticValue(ts, name);
         } else {
-            // not implemented
-            return -1;
+            const aggr = names[1];
+            const windowLength = parseInt(names[2]);
+            const intervals = Math.floor(windowLength / this.nodeFrequency);
+
+            // generate the array of numbers
+            let values = [];
+            for (let i = 1; i <= intervals; i++) {
+                values.push(this.staticValue(ts - i * this.nodeFrequency, name));
+            }
+
+            return this.calculateAggregate(aggr, values);
         }
     }
 
