@@ -3,8 +3,8 @@
  */
 
 // includes
-// const StreamFusion = require('nrg-stream-fusion').streamFusion;
-const StreamFusion = require('./main.js').streamFusion;
+const StreamFusion = require('nrg-stream-fusion').streamFusion;
+// const StreamFusion = require('./main.js').streamFusion;
 
 // SMART-CITY CONFIG
 let smConf = {
@@ -28,14 +28,14 @@ let smConf = {
         "weather": []
     },
     "fusion": {                                                         // feature vector configuration
-        "fusionModel": "ST0005-0000_1d",                                // name of the topic
+        "fusionModel": "ST0005-0000_2d",                                // name of the topic
         "connection": {
             "type": "kafka"
         },
         "fusionTick": 24 * 60 * 60 * 1000,                              // resampling on 24h
         "model": {
             topic: "predictions_ST0005-0000",
-            horizon: 1,
+            horizon: 2,
             label: 0,
             options: {
                 method: "EMA",
@@ -65,7 +65,7 @@ let smConf = {
                 "master": false,
                 "attributes": [
                     { "time": 0, "attributes": [                                // current features
-                        { type: "value", "name": "windSpeed3" },                // first feature is also the predicted feature
+                        { type: "value", "name": "windSpeed2" },                // first feature is also the predicted feature
                     ]}
                 ]
             }
@@ -76,12 +76,12 @@ let smConf = {
 
 // kafka connection config
 let connectionConfig = {
-    // kafka: "172.29.12.94:9092",
-    kafka: "localhost:9092",
+    kafka: "172.29.12.94:9092",
+    // kafka: "localhost:9092",
 }
 
 // initialize all the fusion scenarios
-console.log("Initializing models for 1d prediction horizons - simple EMA");
+console.log("Initializing models for 2d prediction horizons - simple EMA");
 console.log("ST0005-0000 to ST00005-0028");
 
 let fusion = [];
@@ -92,8 +92,8 @@ function lZ(i) {
 }
 
 // create 10 fusion models
-for (let i = 1; i <= 1; i++) {
-    connectionConfig.clientId = 'clientSubstation_' + Math.random().toString(16).substr(2, 8);
+for (let i = 0; i <= 28; i++) {
+    connectionConfig.clientId = 'clientSubstation_' + Math.random().toString(16).substr(2, 10);
 
     /*
     // change weather feature according to time horizon
@@ -112,7 +112,7 @@ for (let i = 1; i <= 1; i++) {
 
     nodeId = "ST0005-00" + lZ(i);
     smConf["fusion"]["nodes"][0]["nodeid"] = nodeId;
-    smConf["fusion"]["fusionModel"] = nodeId + "_1d";
+    smConf["fusion"]["fusionModel"] = nodeId + "_2d";
     smConf["fusion"]["model"]["topic"] = "predictions_" + nodeId;
 
     fusion.push(new StreamFusion(connectionConfig, smConf["fusion"], smConf["aggr"]));
