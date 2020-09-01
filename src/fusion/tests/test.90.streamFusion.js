@@ -129,7 +129,7 @@ describe('streamFusion', function() {
     let fusion;
 
     before(function() {
-        fileManager.removeFolder('./db/');
+        // fileManager.removeFolder('./db/');
         fileManager.createFolder('./db/');
         // create base
         fusion = new StreamFusion(connectionConfig, fusionConfig, aggrConfigs);

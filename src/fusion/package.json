@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha tests/test.11*",
+    "test": "mocha tests/*",
     "make": ""
   },
   "author": "Klemen Kenda",

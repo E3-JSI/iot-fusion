@@ -279,6 +279,7 @@ describe('streamingTrafficCounterNode', function() {
             stcn.processRecord(JSON.parse('{"stampm": 1468493073000}'));
             assert.equal(stcn.buffer.length, 3);
             assert.equal(stcn.buffer[2].carno, 0);
+            assert.equal(stcn.buffer[2].v, 0);
         });
 
         it ('stream aggregates calculated correctly for #2 insertion', function() {
