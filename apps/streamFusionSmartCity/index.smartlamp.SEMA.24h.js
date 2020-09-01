@@ -3,7 +3,7 @@
  */
 
 // includes
-const StreamFusion = require('nrg-stream-fusion').StreamFusion;
+const StreamFusion = require('nrg-stream-fusion').streamFusion;
 
 // SMART-CITY CONFIG
 let smConf = {
@@ -82,7 +82,7 @@ let smConf = {
 
 // kafka connection config
 let connectionConfig = {
-    kafka: "localhost:9092",
+    kafka: "172.29.12.94:9092",
 }
 
 // initialize all the fusion scenarios
