@@ -276,6 +276,7 @@ describe('streamingSmartLampNode', function() {
             ssln.processRecord(JSON.parse('{"stampm": 1468493073000}'));
             assert.equal(ssln.buffer.length, 3);
             assert.equal(ssln.buffer[2].dimml, 0);
+            assert.equal(ssln.buffer[2].pact, 0);
         });
 
         it ('stream aggregates calculated correctly for #2 insertion', function() {

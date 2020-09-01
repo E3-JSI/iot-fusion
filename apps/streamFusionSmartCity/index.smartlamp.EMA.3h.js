@@ -3,7 +3,7 @@
  */
 
 // includes
-const StreamFusion = require('./streamFusion.js');
+const StreamFusion = require('nrg-stream-fusion').StreamFusion;
 
 // SMART-CITY CONFIG
 let smConf = {

@@ -108,6 +108,8 @@ class streamingAirQualityNode extends streamingNode {
             val = 0;
             let day = new Date(ts).getDay();
             if ((day >= 6) || (day == 0)) val = 1;
+        } else {
+            console.error("Static calculated feature not available", attr);
         }
 
         return val;
