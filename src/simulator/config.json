@@ -1,5 +1,5 @@
 {
-    "timeFactor": 3600,
+    "timeFactor": 20000,
     "log": "none",
     "connection": {
         "type": "kafka",
@@ -18,10 +18,10 @@
             "format": "{ \"stampm\": %time%, \"dimml\": %dimml%, \"pact\": %pact% }"
         },
         {
-            "nodeid": "W24h",
+            "nodeid": "W3d",
             "timeFormat": "unixs",
-            "normalizeStartTime": "hour",
-            "frequency": 3600000,
+            "normalizeStartTime": "day",
+            "frequency": 86400000,
             "fields": [
                 { "name": "temperature", "type": "random" },
                 { "name": "humidity", "type": "random" },
@@ -32,29 +32,9 @@
                 { "name": "daylight", "type": "random" },
                 { "name": "parts", "type": "parts" }
             ],
-            "parts": 24,
-            "format": "{ currently: { time: %time% }, hourly: { data: [%parts%] }}",
-            "formatPart": "{ \"time\": %time%, \"temperature\": %temperature%, \"humidity\": %humidity%, \"windSpeed\": %windSpeed%, \"windBearing\": %windBearing%, \"cloudCover\": %cloudCover%, \"pressure\": %pressure%, \"daylight\": %daylight%}"
-        },
-        {
-            "nodeid": "S1",
-            "nodeType": "staticData",
-            "timeFormat": "unixms",
-            "normalizeStartTime": "hour",
-            "frequency": 3600000,
-            "horizon": 4,
-            "fields": [
-                { "name": "hourOfDay", "type": "hourOfDay" },
-                { "name": "holiday", "type": "holiday" },
-                { "name": "dayAfterHoliday", "type": "dayAfterHoliday" },
-                { "name": "dayBeforeHoliday", "type": "dayBeforeHoliday" },
-                { "name": "dayOfWeek", "type": "dayOfWeek" },
-                { "name": "dayOfMonth", "type": "dayOfMonth" },
-                { "name": "dayOfYear", "type": "dayOfYear" },
-                { "name": "monthOfYear", "type": "monthOfYear" },
-                { "name": "weekEnd", "type": "weekEnd" }
-            ],
-            "format": "{ \"timestamp\": %time%, \"timeOfDay\": %hourOfDay%, \"dayAfterHoliday\": %dayAfterHoliday%, \"dayBeforeHoliday\": %dayBeforeHoliday%, \"dayOfYear\": %dayOfYear%, \"dayOfWeek\": %dayOfWeek%, \"dayOfMonth\": %dayOfMonth%, \"holiday\": %holiday%, \"monthOfYear\": %monthOfYear%, \"weekEnd\": %weekEnd% }"
+            "parts": 4,
+            "format": "{ \"currently\": { \"time\": %time% }, \"daily\": { \"data\": [%parts%] }}",
+            "formatPart": "{ \"temperature\": %temperature%, \"humidity\": %humidity%, \"windSpeed\": %windSpeed%, \"windBearing\": %windBearing%, \"cloudCover\": %cloudCover%, \"pressure\": %pressure%, \"daylight\": %daylight%}"
         }
     ]
 }

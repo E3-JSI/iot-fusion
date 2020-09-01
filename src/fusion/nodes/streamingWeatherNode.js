@@ -62,6 +62,10 @@ class streamingWeatherNode extends streamingNode {
     processRecord(rec) {
         // we DO NOT deal with aggregates with weather data (yet)
         // TODO: we can start using streamaggregates on this type of weather
+        if (typeof rec == "string") {
+            console.log(rec);
+            rec = JSON.parse(rec);
+        }
 
         // extract record from rec (according to the store construction)
         let record = {};

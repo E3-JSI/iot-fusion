@@ -29,7 +29,7 @@ let smConf = {
         "calculated": []
     },
     "fusion": {                                                         // feature vector configuration
-        "fusionModel": "ST0005-0000_3h",                                // name of the topic
+        "fusionModel": "ST0005-0000_12h",                                // name of the topic
         "connection": {
             "type": "kafka"
         },
@@ -86,7 +86,7 @@ let connectionConfig = {
 }
 
 // initialize all the fusion scenarios
-console.log("Initializing models for 3h prediction horizons - simple EMA");
+console.log("Initializing models for 12h prediction horizons - structured EMA");
 console.log("ST0005-0000 to ST00005-0028");
 
 let fusion = [];

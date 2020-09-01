@@ -43,7 +43,7 @@ class SimulatorNode {
             currentDate.setMilliseconds(0);
         } else if (this.config.normalizeStartTime == "day") {
             // get the full day near the current timestamp
-            currentDate.setHours(0);
+            // currentDate.setHours(0);
             currentDate.setMinutes(0);
             currentDate.setSeconds(0);
             currentDate.setMilliseconds(0);
@@ -156,7 +156,7 @@ class SimulatorNode {
     send() {
         this.lastts += this.config.frequency;
         const record = this.generate(this.lastts + this.startts);
-        console.log("Sending record: " + this.topic);
+        console.log("Sending record to: " + this.topic + ", t =", this.lastts + this.startts);
         this.kafka.publish(JSON.stringify(record));
     }
 
