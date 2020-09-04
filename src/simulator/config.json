@@ -7,15 +7,22 @@
     },
     "nodes": [
         {
-            "nodeid": "ST0005-0001",
+            "nodeid": "ST0005-0000",
             "timeFormat": "unixms",
             "normalizeStartTime": "hour",
             "frequency": 3600000,
             "fields": [
-                { "name": "dimml", "type": "random" },
-                { "name": "pact", "type": "random" }
+                { "name": "no2", "type": "random" },
+                { "name": "o3", "type": "random" },
+                { "name": "pm025", "type": "random" },
+                { "name": "pm100", "type": "random" },
+                { "name": "vmax", "type": "random" },
+                { "name": "carno", "type": "random" },
+                { "name": "vavg", "type": "random" },
+                { "name": "vmin", "type": "random" },
+                { "name": "w", "type": "random" }
             ],
-            "format": "{ \"stampm\": %time%, \"dimml\": %dimml%, \"pact\": %pact% }"
+            "format": "{ \"stampm\": %time%, \"no2\": %no2%, \"o3\": %o3%, \"pm025\": %pm025%, \"pm100\": %pm100%, \"vmax\": %vmax%, \"vmin\": %vmin%, \"vavg\": %vavg%, \"carno\": %carno%, \"w\": %w% }"
         },
         {
             "nodeid": "W3d",

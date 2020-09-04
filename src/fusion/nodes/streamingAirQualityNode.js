@@ -113,6 +113,10 @@ class streamingAirQualityNode extends streamingNode {
         // extract record from rec (according to the store construction)
         let record = {};
 
+        if (typeof rec == "string") {
+            rec = JSON.parse(rec);
+        }
+
         // TODO: what if we used last-value interpolation instead of zero in the
         //       null?
         let unixts = rec["stampm"];
