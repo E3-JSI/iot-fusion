@@ -35,7 +35,7 @@ class streamingAirQualityNode extends streamingNode {
             fields: [
                 { name: "Time", type: "datetime" },
                 { name: "rh", type: "float" },      // relative humidity
-                { name: "temp", type: "float" },       // temperature
+                { name: "temp", type: "float" },    // temperature
                 { name: "no2", type: "float" },
                 { name: "o3", type: "float" },
                 { name: "pm025", type: "float" },
@@ -49,7 +49,7 @@ class streamingAirQualityNode extends streamingNode {
             ]
         });
 
-        this.rawstore = this.base.store(this.nodeId);
+        this.rawstore = this.base.store(this.storeName);
 
         // initialize last timestamp
         this.lastTimestamp = 0;
@@ -131,7 +131,6 @@ class streamingAirQualityNode extends streamingNode {
         let vmax = (isNaN(rec["vmax"]) || rec["vmax"] == null) ? 0 : rec["vmax"];
         let vmin = (isNaN(rec["vmin"]) || rec["vmin"] == null) ? 0 : rec["vmin"];
         let w = (isNaN(rec["w"]) || rec["w"] == null) ? 0 : rec["w"];
-
 
         // calculate CAQI
         let caqi = this.calculateCAQI(no2, pm100, o3, pm025);

@@ -3,12 +3,23 @@
  */
 
 // includes
-const StreamFusion = require('nrg-stream-fusion').streamFusion;
+// const StreamFusion = require('nrg-stream-fusion').streamFusion;
+const StreamFusion = require('../../src/fusion/main').streamFusion;
 
 // SMART-CITY CONFIG
 let smConf = {
     "aggr": {
         "airquality": [
+            { "field": "pm100", "tick": [
+                {"type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [     // 1d sliding window
+                    {"type": "ma" },
+                    {"type": "max" },
+                    {"type": "min" },
+                    {"type": "variance" },
+                ]}
+            ]},
+        ],
+        "airquality2": [
             { "field": "caqi", "tick": [
                 {"type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [     // 1d sliding window
                     {"type": "ma" },
@@ -68,15 +79,15 @@ let smConf = {
         },
         "nodes": [
             {
-                "type": "smartlamp",
+                "type": "airquality",
                 "nodeid": "ST0005-0000",
-                "aggrConfigId": "smartlamp",
+                "aggrConfigId": "airquality",
                 "master": true,
                 "attributes": [
                     { "time": 0, "attributes": [                                // current features
                         { type: "value", "name": "caqi" },                      // first feature is also the predicted feature
-                        { type: "value", "name": "pact|ma|86400000" },
-                        { type: "value", "name": "dimml|ma|86400000" },
+                        { type: "value", "name": "pm100|ma|86400000" },
+                        { type: "value", "name": "pm025|ma|86400000" },
                     ]}
                 ]
             }

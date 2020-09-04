@@ -1,6 +1,6 @@
 {
   "name": "nrg-stream-fusion",
-  "version": "1.8.1",
+  "version": "1.8.3",
   "description": "Multiple hetergeneous data stream fusion component based on Kafka.",
   "main": "main.js",
   "scripts": {
