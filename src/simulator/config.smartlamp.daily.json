@@ -1,0 +1,40 @@
+{
+    "timeFactor": 20000,
+    "log": "none",
+    "connection": {
+        "type": "kafka",
+        "kafka": "localhost:9092"
+    },
+    "nodes": [
+        {
+            "nodeid": "ST0005-0001",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 3600000,
+            "fields": [
+                { "name": "dimml", "type": "random" },
+                { "name": "pact", "type": "random" }
+            ],
+            "format": "{ \"stampm\": %time%, \"dimml\": %dimml%, \"pact\": %pact% }"
+        },
+        {
+            "nodeid": "W3d",
+            "timeFormat": "unixs",
+            "normalizeStartTime": "day",
+            "frequency": 86400000,
+            "fields": [
+                { "name": "temperature", "type": "random" },
+                { "name": "humidity", "type": "random" },
+                { "name": "windSpeed", "type": "random" },
+                { "name": "windBearing", "type": "random" },
+                { "name": "cloudCover", "type": "random" },
+                { "name": "pressure", "type": "random" },
+                { "name": "daylight", "type": "random" },
+                { "name": "parts", "type": "parts" }
+            ],
+            "parts": 4,
+            "format": "{ \"currently\": { \"time\": %time% }, \"daily\": { \"data\": [%parts%] }}",
+            "formatPart": "{ \"temperature\": %temperature%, \"humidity\": %humidity%, \"windSpeed\": %windSpeed%, \"windBearing\": %windBearing%, \"cloudCover\": %cloudCover%, \"pressure\": %pressure%, \"daylight\": %daylight%}"
+        }
+    ]
+}
