@@ -221,6 +221,7 @@ describe('streamingAirQualityNode', function() {
                 { id: 9, name: 'vmax', type: 'float', nullable: false, internal: false, primary: false },
                 { id: 10, name: 'vmin', type: 'float', nullable: false, internal: false, primary: false },
                 { id: 11, name: 'w', type: 'float', nullable: false, internal: false, primary: false },
+                { id: 12, name: 'caqi', type: 'float', nullable: false, internal: false, primary: false },
             ]);
         });
 
@@ -473,6 +474,7 @@ describe('streamingAirQualityNode', function() {
                 "temp|min|86400000": 1,
                 "temp|variance|21600000": 0.5,
                 "temp|variance|86400000": 0.5,
+                "caqi": 8.333333333333334,
                 "carno": 7,
                 "carno|max|21600000": 7,
                 "carno|ma|21600000": 6.5,
@@ -565,6 +567,7 @@ describe('streamingAirQualityNode', function() {
                 "temp|min|86400000": 0,
                 "temp|variance|21600000": 13,
                 "temp|variance|86400000": 13,
+                "caqi": 23.333333333333332,
                 "carno": 16,
                 "carno|max|21600000": 16,
                 "carno|ma|21600000": 10.083333333333332,
@@ -600,4 +603,29 @@ describe('streamingAirQualityNode', function() {
             assert.equal(saqn.buffer.length, 12);
         });
     });
+
+    describe ('CAQI tests', function() {
+        it('subindex calculation', function() {
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 0), 0);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 400), 100);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 50), 25);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 100), 50);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 200), 75);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 1), 0.5);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 25), 12.5);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 75), 37.5);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 150), 62.5);
+            assert.equal(saqn.calculateSubIndex([0, 50, 100, 200, 400], 300), 87.5);
+        });
+
+        it('CAQI calculation', function() {
+            assert.equal(saqn.calculateCAQI(0, 0, 0, 15), 25);
+            assert.equal(saqn.calculateCAQI(0, 0, 90, 0), 37.5);
+            assert.equal(saqn.calculateCAQI(0, 135, 0, 0), 87.5);
+            assert.equal(saqn.calculateCAQI(350, 0, 0, 0), 93.75);
+            assert.equal(saqn.calculateCAQI(350, 135, 90, 15), 93.75);
+        });
+    });
+
+
 });
