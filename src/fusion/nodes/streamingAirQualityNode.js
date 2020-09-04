@@ -22,6 +22,7 @@ class streamingAirQualityNode extends streamingNode {
         this.parent = parent;
         // remember nodeid name
         this.nodeId = config.nodeid;
+        this.storeName = this.nodeId.replace("-", "_");
 
         // creating empty buffer of partial feature vectors
         this.buffer = [];
@@ -30,11 +31,11 @@ class streamingAirQualityNode extends streamingNode {
 
         // adding store
         this.base.createStore({
-            name: this.nodeId,
+            name: this.storeName,
             fields: [
                 { name: "Time", type: "datetime" },
                 { name: "rh", type: "float" },      // relative humidity
-                { name: "temp", type: "float" },       // temperature
+                { name: "temp", type: "float" },    // temperature
                 { name: "no2", type: "float" },
                 { name: "o3", type: "float" },
                 { name: "pm025", type: "float" },
@@ -43,11 +44,12 @@ class streamingAirQualityNode extends streamingNode {
                 { name: "vavg", type: "float" },
                 { name: "vmax", type: "float" },
                 { name: "vmin", type: "float" },
-                { name: "w", type: "float" }
+                { name: "w", type: "float" },
+                { name: "caqi", type: "float" }
             ]
         });
 
-        this.rawstore = this.base.store(this.nodeId);
+        this.rawstore = this.base.store(this.storeName);
 
         // initialize last timestamp
         this.lastTimestamp = 0;
@@ -59,6 +61,50 @@ class streamingAirQualityNode extends streamingNode {
         super.postConstructor();
     }
 
+
+    /**
+     * Calculate a CAQI sub-index. Interpolate it in the limits.
+     *
+     * @param {float[5]} 0, 25, 50, 75 and 100-percentile limits.
+     * @param {*} v Measurement value.
+     */
+    calculateSubIndex(f, v) {
+        if (v >= f[4]) return 100;
+        for (let i = 3; i >= 0; i--) {
+            if (v > f[i]) {
+                const low_limit = i * 25;
+                const high_limit = low_limit + 25;
+
+                const sub_index =
+                    low_limit +
+                    (high_limit - low_limit) * (v - f[i]) / (f[i + 1] - f[i]);
+
+                return sub_index;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * CAQI calculation.
+     * https://en.wikipedia.org/wiki/Air_quality_index
+     *
+     * @param {float} no2 NO2 concentration in \mu g/m3.
+     * @param {float} pm100 PM10 concentration in \mu g/m3.
+     * @param {float} o3 O3 concentration in \mu g/m3.
+     * @param {float} pm025 PM2.5 concentration in \mu g/m3.
+     */
+    calculateCAQI(no2, pm100, o3, pm025) {
+        let sub_indices = [
+            this.calculateSubIndex([0, 50, 100, 200, 400], no2),
+            this.calculateSubIndex([0, 25, 50, 90, 180], pm100),
+            this.calculateSubIndex([0, 60, 120, 180, 240], o3),
+            this.calculateSubIndex([0, 15, 30, 55, 110], pm025)
+        ];
+
+        return Math.max(...sub_indices);
+    }
+
     /**
      * processRecord()
      * @param {json} rec    Raw record from data source.
@@ -66,6 +112,10 @@ class streamingAirQualityNode extends streamingNode {
     processRecord(rec) {
         // extract record from rec (according to the store construction)
         let record = {};
+
+        if (typeof rec == "string") {
+            rec = JSON.parse(rec);
+        }
 
         // TODO: what if we used last-value interpolation instead of zero in the
         //       null?
@@ -81,6 +131,9 @@ class streamingAirQualityNode extends streamingNode {
         let vmax = (isNaN(rec["vmax"]) || rec["vmax"] == null) ? 0 : rec["vmax"];
         let vmin = (isNaN(rec["vmin"]) || rec["vmin"] == null) ? 0 : rec["vmin"];
         let w = (isNaN(rec["w"]) || rec["w"] == null) ? 0 : rec["w"];
+
+        // calculate CAQI
+        let caqi = this.calculateCAQI(no2, pm100, o3, pm025);
 
         if (unixts <= this.lastTimestamp) {
             console.log("Air Quality - double timestamp.");
@@ -105,7 +158,8 @@ class streamingAirQualityNode extends streamingNode {
             vavg: vavg,
             vmax: vmax,
             vmin: vmin,
-            w: w
+            w: w,
+            caqi: caqi
         });
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
@@ -128,6 +182,7 @@ class streamingAirQualityNode extends streamingNode {
         combined["vmax"] = vmax;
         combined["vmin"] = vmin;
         combined["w"] = w;
+        combined["caqi"] = caqi;
 
         // push the vector in the buffer
         this.buffer.push(combined);
