@@ -3,23 +3,12 @@
  */
 
 // includes
-// const StreamFusion = require('nrg-stream-fusion').streamFusion;
-const StreamFusion = require('../../src/fusion/main').streamFusion;
+const StreamFusion = require('nrg-stream-fusion').streamFusion;
 
 // SMART-CITY CONFIG
 let smConf = {
     "aggr": {
         "airquality": [
-            { "field": "pm100", "tick": [
-                {"type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [     // 1d sliding window
-                    {"type": "ma" },
-                    {"type": "max" },
-                    {"type": "min" },
-                    {"type": "variance" },
-                ]}
-            ]},
-        ],
-        "airquality2": [
             { "field": "caqi", "tick": [
                 {"type": "winbuf", "winsize": 24 * 60 * 60 * 1000, "sub": [     // 1d sliding window
                     {"type": "ma" },
@@ -97,8 +86,7 @@ let smConf = {
 
 // kafka connection config
 let connectionConfig = {
-    kafka: "localhost:9092",
-    // kafka: "172.29.12.94:9092",
+    kafka: "172.29.12.94:9092",
 }
 
 // initialize all the fusion scenarios
@@ -106,7 +94,7 @@ console.log("Initializing models for 3h prediction horizons - simple EMA");
 console.log("AirQuality ST0005-0000");
 
 let fusion = [];
-const sensors = [ 'caqi', 'no2', 'o3', 'pm025', 'pm100'];
+const sensors = [ 'caqi', 'no2', 'o3', 'pm025', 'pm100', 'w'];
 
 // create 10 fusion models
 for (let i = 0; i < sensors.length; i++) {

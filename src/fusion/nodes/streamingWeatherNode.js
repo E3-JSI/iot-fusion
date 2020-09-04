@@ -29,10 +29,6 @@ class streamingWeatherNode extends streamingNode {
             [ "temperature", "humidity", "pressure", "windSpeed", "windBearing", "cloudCover" ] :
             config["fieldtypes"];
 
-
-        console.log(this.datatype, this.fieldTypes);
-
-
         for (let i = 0; i < this.datasize; i++) {
             for (let j in this.fieldTypes) {
                 let fieldName = this.fieldTypes[j] + i;
@@ -63,7 +59,6 @@ class streamingWeatherNode extends streamingNode {
         // we DO NOT deal with aggregates with weather data (yet)
         // TODO: we can start using streamaggregates on this type of weather
         if (typeof rec == "string") {
-            console.log(rec);
             rec = JSON.parse(rec);
         }
 
