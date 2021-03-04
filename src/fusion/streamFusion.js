@@ -18,6 +18,10 @@ const streamingWeatherNode = require('./nodes/streamingWeatherNode.js');
 const streamingStaticNode = require('./nodes/streamingStaticNode.js');
 const staticCalculatedNode = require('./nodes/staticCalculatedNode.js');
 const IncrementalLearning = require ('./models/IncrementalLearning.js');
+
+const streamingBrailaNoiseNode = require('./nodes/streamingNoiseNode.js');
+const streamingNaiadesWeatherNode = require('./nodes/streamingNaiadesWeatherNode.js');
+
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
 
 class streamFusion {
@@ -97,6 +101,10 @@ class streamFusion {
                 this.nodes.push(new staticCalculatedNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else if (nodeConfig["type"] == "weather") {
                 this.nodes.push(new streamingWeatherNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
+            } else if (nodeConfig["type"]== "noise") {
+                this.nodes.push(new streamingBrailaNoiseNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
+            } else if (nodeConfig["type"]== "weatherNaiades") {
+                this.nodes.push(new streamingNaiadesWeatherNode(this.base, this.connectionConfig, nodeConfig, aggrConfigs, self.processRecordHook, nodeI, self));
             } else {
                 console.log("ERROR: Streaming node type not found!");
             }

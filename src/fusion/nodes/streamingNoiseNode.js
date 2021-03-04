@@ -1,9 +1,9 @@
 /**
- * streamingTimeValueNode
- * Specialized streaming node for ingesting time-value pairs from a stream.
+ * streamingSmartLampNode (template)
+ * Streaming smart lamp node class for heterogeneous sensor stream data fusion.
  */
 const streamingNode = require('./streamingNode.js');
-class streamingTimeValueNode extends streamingNode {
+class streamingNoiseNode extends streamingNode {
     /**
      * constructor
      * @param {qm.Base}  base               QMiner base.
@@ -34,12 +34,14 @@ class streamingTimeValueNode extends streamingNode {
             name: this.storeName,
             fields: [
                 { name: "Time", type: "datetime" },
-                { name: "value", type: "float" }
+                { name: "leak_state", type: "float" },
+                { name: "noise_dB", type: "float" },
+                { name: "spre_dB", type: "float" }
             ]
         });
         this.rawstore = this.base.store(this.storeName);
 
-        this.lastValue = 0;
+        // initialize last timestamp
         this.lastTimestamp = 0;
 
         // create appropriate stream aggregates
@@ -54,16 +56,22 @@ class streamingTimeValueNode extends streamingNode {
      * @param {json} rec    Raw record from data source.
      */
     processRecord(rec) {
-        // extract data
+        // extract record from rec (according to the store construction)
+        let record = {};
+
         if (typeof rec == "string") {
             rec = JSON.parse(rec);
         }
 
+        // TODO: what if we used last-value interpolation instead of zero in the
+        //       null?
         let unixts = rec["time"];
-        let value = (isNaN(rec["value"]) || rec["value"] == null) ? 0 : rec["value"];
+        let noise_dB = (isNaN(rec["noise_dB"]) || rec["noise_dB"] == null) ? 0 : rec["noise_dB"];
+        let leak_state = (isNaN(rec["leak_state"]) || rec["leak_state"] == null) ? 0 : rec["leak_state"];
+        let spre_dB = (isNaN(rec["spre_dB"]) || rec["spre_dB"] == null) ? 0 : rec["spre_dB"];
 
         if (unixts <= this.lastTimestamp) {
-            console.log("TimeValue - double timestamp.");
+            console.log("Water - double timestamp.");
             return;
         }
 
@@ -72,11 +80,12 @@ class streamingTimeValueNode extends streamingNode {
             return;
         }
 
-        // do check timestamp if stream aggregates are calculated
-        // if order is mixed - ignore (!)
+        // create ghost store record
         this.rawRecord = this.rawstore.newRecord({
             Time: unixts,
-            value: value
+            noise_dB: noise_dB,
+            leak_state: leak_state,
+            spre_dB: spre_dB
         });
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
@@ -88,7 +97,9 @@ class streamingTimeValueNode extends streamingNode {
         // combining it with current state vector
         let combined = aggregates;
         // update combined vector with current values
-        combined["value"] = value;
+        combined["noise_dB"] = noise_dB;
+        combined["leak_state"] = leak_state;
+        combined["spre_dB"] = spre_dB;
 
         // push the vector in the buffer
         this.buffer.push(combined);
@@ -102,4 +113,4 @@ class streamingTimeValueNode extends streamingNode {
 
 }
 
-module.exports = streamingTimeValueNode;
+module.exports = streamingNoiseNode;
