@@ -1,9 +1,9 @@
 /**
- * streamingNoiseNode (template)
+ * streamingDebitmeterNode (template)
  * Streaming noise node class for heterogeneous sensor stream data fusion.
  */
 const streamingNode = require('./streamingNode.js');
-class streamingNoiseNode extends streamingNode {
+class streamingDebitmeterNode extends streamingNode {
     /**
      * constructor
      * @param {qm.Base}  base               QMiner base.
@@ -34,9 +34,14 @@ class streamingNoiseNode extends streamingNode {
             name: this.storeName,
             fields: [
                 { name: "Time", type: "datetime" },
-                { name: "leak_state", type: "float" },
-                { name: "noise_db", type: "float" },
-                { name: "spre_db", type: "float" }
+                { name: "flow_rate_value", type: "float" },
+                { name: "totalizer1", type: "float" },
+                { name: "totalizer2", type: "float" },
+                { name: "consumer_totalizer", type: "float" },
+                { name: "analog_input1", type: "float" },
+                { name: "analog_input2", type: "float" },
+                { name: "batery_capacity", type: "float" },
+                { name: "alarms_in_decimal", type: "float" }
             ]
         });
         this.rawstore = this.base.store(this.storeName);
@@ -67,12 +72,17 @@ class streamingNoiseNode extends streamingNode {
         //       null?
         let unixts = rec["time"] * 1000;
 
-        let noise_db = (isNaN(rec["noise_db"]) || rec["noise_db"] == null) ? 0 : rec["noise_db"];
-        let leak_state = (isNaN(rec["leak_state"]) || rec["leak_state"] == null) ? 0 : rec["leak_state"];
-        let spre_db = (isNaN(rec["spre_db"]) || rec["spre_db"] == null) ? 0 : rec["spre_db"];
+        let flow_rate_value = (isNaN(rec["flow_rate_value"]) || rec["flow_rate_value"] == null) ? 0 : rec["flow_rate_value"];
+        let totalizer1 = (isNaN(rec["totalizer1"]) || rec["totalizer1"] == null) ? 0 : rec["totalizer1"];
+        let totalizer2 = (isNaN(rec["totalizer2"]) || rec["totalizer2"] == null) ? 0 : rec["totalizer2"];
+        let consumer_totalizer = (isNaN(rec["consumer_totalizer"]) || rec["consumer_totalizer"] == null) ? 0 : rec["consumer_totalizer"];
+        let analog_input1 = (isNaN(rec["analog_input1"]) || rec["analog_input1"] == null) ? 0 : rec["analog_input1"];
+        let analog_input2 = (isNaN(rec["analog_input2"]) || rec["analog_input2"] == null) ? 0 : rec["analog_input2"];
+        let batery_capacity = (isNaN(rec["batery_capacity"]) || rec["batery_capacity"] == null) ? 0 : rec["batery_capacity"];
+        let alarms_in_decimal = (isNaN(rec["alarms_in_decimal"]) || rec["alarms_in_decimal"] == null) ? 0 : rec["alarms_in_decimal"];
 
         if (unixts <= this.lastTimestamp) {
-            console.log("Noise - double timestamp.");
+            console.log("Debitmeter - double timestamp.");
             return;
         }
 
@@ -84,9 +94,14 @@ class streamingNoiseNode extends streamingNode {
         // create ghost store record
         this.rawRecord = this.rawstore.newRecord({
             Time: unixts,
-            noise_db: noise_db,
-            leak_state: leak_state,
-            spre_db: spre_db
+            flow_rate_value: flow_rate_value,
+            totalizer1: totalizer1,
+            totalizer2: totalizer2,
+            consumer_totalizer: consumer_totalizer,
+            analog_input1: analog_input1,
+            analog_input2: analog_input2,
+            batery_capacity: batery_capacity,
+            alarms_in_decimal: alarms_in_decimal
         });
 
         // trigger stream aggregates bound to Raw store - first stage of resampling
@@ -98,9 +113,14 @@ class streamingNoiseNode extends streamingNode {
         // combining it with current state vector
         let combined = aggregates;
         // update combined vector with current values
-        combined["noise_db"] = noise_db;
-        combined["leak_state"] = leak_state;
-        combined["spre_db"] = spre_db;
+        combined["flow_rate_value"] = flow_rate_value;
+        combined["totalizer1"] = totalizer1;
+        combined["totalizer2"] = totalizer2;
+        combined["consumer_totalizer"] = consumer_totalizer;
+        combined["analog_input1"] = analog_input1;
+        combined["analog_input2"] = analog_input2;
+        combined["batery_capacity"] = batery_capacity;
+        combined["alarms_in_decimal"] = alarms_in_decimal;
 
         // push the vector in the buffer
         this.buffer.push(combined);
@@ -114,4 +134,4 @@ class streamingNoiseNode extends streamingNode {
 
 }
 
-module.exports = streamingNoiseNode;
+module.exports = streamingDebitmeterNode;

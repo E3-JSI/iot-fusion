@@ -59,7 +59,7 @@ class streamingTimeValueNode extends streamingNode {
             rec = JSON.parse(rec);
         }
 
-        let unixts = rec["time"];
+        let unixts = rec["time"] * 1000;
         let value = (isNaN(rec["value"]) || rec["value"] == null) ? 0 : rec["value"];
 
         if (unixts <= this.lastTimestamp) {
