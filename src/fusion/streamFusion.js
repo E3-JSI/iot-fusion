@@ -19,7 +19,6 @@ const streamingStaticNode = require('./nodes/streamingStaticNode.js');
 const staticCalculatedNode = require('./nodes/staticCalculatedNode.js');
 const streamingNoiseNode = require('./nodes/streamingNoiseNode.js');
 const streamingDebitmeterNode = require('./nodes/streamingDebitmeterNode.js');
-const streamingNaiadesWeatherNode = require('./nodes/streamingNaiadesWeatherNode.js');
 const IncrementalLearning = require ('./models/IncrementalLearning.js');
 
 const { AbstractBroker, KafkaNodeBroker, MQTTBroker, KafkaRDBroker } = require('../common/brokers/brokers.js');
