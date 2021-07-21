@@ -102,3 +102,33 @@ for (let i = 0; i <= 28; i++) {
 
     fusion.push(new StreamFusion(connectionConfig, smConf["fusion"], smConf["aggr"]));
 } //
+
+// WATCHDOG CONFIG
+const schedule = require('node-schedule');
+const http = require('http');
+
+const watchdog_ping = {
+    url: "localhost",
+    port: 3001,
+    path: "/ping?id=12&secret=051de32597041e41f73b97d61c67a13b"
+}
+
+const watchdog_cron_schedule = '0 * * * * *'; // every 1 minute
+
+// start scheduler
+var j = schedule.scheduleJob(watchdog_cron_schedule, async () => {
+    console.log("Checking into WatchDog");
+    const options = {
+        hostname: watchdog_ping.url, port: watchdog_ping.port,
+        path: watchdog_ping.path, method: 'GET'
+    }
+    try {
+        const req = http.request(options, res => {
+            res.on('data', d => { /* nothing */ });
+        });
+        req.on('error', error => { console.error(error); })
+        req.end()
+    } catch(e) {
+        console.log("WatchDog - check-in error", e);
+    }
+});
