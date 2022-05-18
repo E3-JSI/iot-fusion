@@ -1,0 +1,110 @@
+{
+    "timeFactor": 100,
+    "log": "none",
+    "connection": {
+        "type": "kafka",
+        "kafka": "localhost:9092"
+    },
+    "nodes": [
+        {
+            "nodeid": "braila_pressure5771",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_pressure5772",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_pressure5773",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_pressure5770",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+
+        {
+            "nodeid": "braila_noise5980",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_noise5981",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_noise2182",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_noise5983",
+            "timeFormat": "unixms",
+            "normalizeStartTime": "hour",
+            "frequency": 90000,
+            "fields": [
+                { "name": "value", "type": "random" }
+            ],
+            "format": "{ \"time\": %time%, \"value\": %value%}"
+        },
+        {
+            "nodeid": "braila_weatherObserved",
+            "timeFormat": "unixs",
+            "normalizeStartTime": "day",
+            "frequency": 86400000,
+            "fields": [
+                { "name": "temperature", "type": "random" },
+                { "name": "humidity", "type": "random" },
+                { "name": "dewPoint", "type": "random" },
+                { "name": "windSpeed", "type": "random" },
+                { "name": "windBearing", "type": "random" },
+                { "name": "pressure", "type": "random" },
+                { "name": "illuminance", "type": "random" },
+                { "name": "pressureTendency", "type": "parts" }
+            ],
+            "parts": 4,
+            "format": "{ \"currently\": { \"time\": %time% }, \"daily\": { \"data\": [%parts%] }}",
+            "formatPart": "{ \"temperature\": %temperature%, \"humidity\": %humidity%, \"windSpeed\": %windSpeed%, \"windBearing\": %windBearing%, \"cloudCover\": %cloudCover%, \"pressure\": %pressure%, \"daylight\": %daylight%}"
+        }
+    ]
+}

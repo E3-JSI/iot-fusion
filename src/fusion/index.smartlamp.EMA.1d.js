@@ -98,11 +98,9 @@ for (let i = 1; i <= 1; i++) {
     /*
     // change weather feature according to time horizon
     let horizon = horizons[i];
-
     // handling changable weather features
     let features = ['temperature', 'humidity', 'pressure', 'windSpeed', 'windBearing', 'cloudCover' ];
     let attributes = [];
-
     for (let i in features) {
         let featureName = features[i] + horizon;
         attributes.push({type: "value", name: featureName});

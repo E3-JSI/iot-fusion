@@ -4,8 +4,10 @@ const config = {
     "connection": {
         type: "kafka",
         options: {
-            kafka: "192.168.99.100:9092",
-            zookeeper: "192.168.99.100:2181"
+            // kafka: "192.168.99.100:9092",
+            // zookeeper: "192.168.99.100:2181"
+            kafka: "loclahost:9092",
+            zookeeper: "localhost:2181"
         }
     }
 }

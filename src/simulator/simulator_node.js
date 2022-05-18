@@ -85,6 +85,9 @@ class SimulatorNode {
             val = 0;
             let day = new Date(ts).getDay();
             if (day >= 5) val = 1;
+        } else if (field.type == "function") {
+            // write function for simulator
+            val = eval(field.function)
         }
 
         return val;
@@ -156,7 +159,7 @@ class SimulatorNode {
     send() {
         this.lastts += this.config.frequency;
         const record = this.generate(this.lastts + this.startts);
-        console.log("Sending record to: " + this.topic + ", t =", this.lastts + this.startts);
+        console.log("Sending record to: " + this.topic + ", t =", this.lastts + this.startts)
         this.kafka.publish(JSON.stringify(record));
     }
 
