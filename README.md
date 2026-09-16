@@ -13,9 +13,11 @@ Documentation is available [here](docs/USERS-MANUAL.md).
 # Publications
 In case you use any of the components for your research, please refer to (and cite) the paper:
 * [Kenda, K.; Kažič, B.; Novak, E.; Mladenić, D. Streaming Data Fusion for the Internet of Things. Sensors 2019, 19, 1955.](https://www.mdpi.com/1424-8220/19/8/1955)
+* [Kenda, K.; Mellios, N.; Senožetnik, M.; Pergar, P. Computer Architectures for Incremental Learning in Water Management.](https://www.mdpi.com/2071-1050/14/5/2886)
 
 ## Applications
-* [Kenda, K.; Mellios, N.; Senožetnik, M.; Pergar, P. Architecture for Stream Mining in Water Management.](https://www.frontiersin.org/journals/big-data) (in preparation)
+* [Kenda, K.; Peternelj, J.; Mellios, N.; Kofinas, D.; Čerin, M., Rožanec, J. Usage of statistical modeling techniques in surface and groundwater level prediction](https://iwaponline.com/aqua/article/69/3/248/73749/Usage-of-statistical-modeling-techniques-in)
+* [Kenda, K.; Mellios, N.; Senožetnik, M.; Pergar, P. Computer Architectures for Incremental Learning in Water Management.](https://www.mdpi.com/2071-1050/14/5/2886) 
 
 ## Related work
 * [Kenda, K.; Kažič, B.; Stopar, L., Fortuna, B., Rupnik, J., Škrjanc, M.; Mladenić, D. Data Fusion Framework for Streaming Heterogeneous Data Sources](#) (in preparation)
